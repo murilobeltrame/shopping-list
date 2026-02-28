@@ -1,4 +1,9 @@
+using ShoppingList.Infrastructure.Db;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddServiceDefaults();
+builder.AddAzureNpgsqlDbContext<ApplicationContext>("database");
 
 builder.Services.AddOpenApi();
 
