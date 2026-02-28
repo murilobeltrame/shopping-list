@@ -20,10 +20,10 @@ description: "Task list template for feature implementation"
 
 ## Path Conventions
 
-- **Single project**: `src/`, `tests/` at repository root
-- **Web app**: `backend/src/`, `frontend/src/`
-- **Mobile**: `api/src/`, `ios/src/` or `android/src/`
-- Paths shown below assume single project - adjust based on plan.md structure
+- **Clean Architecture (.NET)**: `src/[ProjectName].Domain/`, `src/[ProjectName].Application/`, `src/[ProjectName].Infrastructure.Db/`, `src/[ProjectName].RestApi/`
+- **Tests (.NET)**: `test/[ProjectName].Domain.Tests/`, `test/[ProjectName].Application.Tests/`, `test/[ProjectName].Infrastructure.Db.Tests/`, `test/[ProjectName].RestApi.Tests/`, `test/[ProjectName].Architecture.Tests/`
+- **Aspire Environment**: `env/[ProjectName].AppHost/`, `env/[ProjectName].ServiceDefaults/`
+- Paths shown below assume ShoppingList project - adjust based on actual project name in plan.md
 
 <!-- 
   ============================================================================
@@ -49,8 +49,9 @@ description: "Task list template for feature implementation"
 **Purpose**: Project initialization and basic structure
 
 - [ ] T001 Create project structure per implementation plan
-- [ ] T002 Initialize [language] project with [framework] dependencies
-- [ ] T003 [P] Configure linting and formatting tools
+- [ ] T002 Initialize .NET solution with Clean Architecture projects (Domain, Application, Infrastructure.Db, RestApi)
+- [ ] T003 [P] Configure .editorconfig for naming conventions and code style
+- [ ] T004 [P] Setup Aspire orchestration (AppHost, ServiceDefaults)
 
 ---
 
@@ -61,12 +62,13 @@ description: "Task list template for feature implementation"
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
 Examples of foundational tasks (adjust based on your project):
-
-- [ ] T004 Setup database schema and migrations framework
-- [ ] T005 [P] Implement authentication/authorization framework
-- [ ] T006 [P] Setup API routing and middleware structure
-- [ ] T007 Create base models/entities that all stories depend on
-- [ ] T008 Configure error handling and logging infrastructure
+Entity Framework Core DbContext and migrations framework in Infrastructure.Db
+- [ ] T005 [P] Configure Ardalis.Specification repository pattern
+- [ ] T006 [P] Setup minimal API routing structure in RestApi project
+- [ ] T007 Setup MediatR or CQRS handler infrastructure in Application layer
+- [ ] T008 Configure OpenTelemetry logging and tracing via ServiceDefaults
+- [ ] T009 Setup TestContainers configuration for database integration tests
+- [ ] T010 Create Architecture.Tests project with layer dependency rulesstructure
 - [ ] T009 Setup environment configuration management
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
@@ -79,19 +81,24 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 1 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 1 (OPTIO using Shouldly assertions, ensure they FAIL before implementation**
 
-> **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
-
-- [ ] T010 [P] [US1] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T011 [P] [US1] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T011 [P] [US1] Unit tests for domain entities in test/ShoppingList.Domain.Tests/Entities/[EntityName]Tests.cs
+- [ ] T012 [P] [US1] Unit tests for command handlers in test/ShoppingList.Application.Tests/Commands/[CommandName]HandlerTests.cs
+- [ ] T013 [P] [US1] Integration tests with TestContainers in test/ShoppingList.Infrastructure.Db.Tests/[Feature]RepositoryTests.cs
+- [ ] T014 [P] [US1] API endpoint tests in test/ShoppingList.RestApi.Tests/Endpoints/[Feature]EndpointTests.cs
 
 ### Implementation for User Story 1
 
-- [ ] T012 [P] [US1] Create [Entity1] model in src/models/[entity1].py
-- [ ] T013 [P] [US1] Create [Entity2] model in src/models/[entity2].py
-- [ ] T014 [US1] Implement [Service] in src/services/[service].py (depends on T012, T013)
-- [ ] T015 [US1] Implement [endpoint/feature] in src/[location]/[file].py
+- [ ] T015 [P] [US1] Create domain entity in src/ShoppingList.Domain/Entities/[EntityName].cs
+- [ ] T016 [P] [US1] Create value objects in src/ShoppingList.Domain/ValueObjects/[ValueObjectName].cs
+- [ ] T017 [P] [US1] Create command/query records in src/ShoppingList.Application/[Commands|Queries]/[FeatureName]/
+- [ ] T018 [US1] Implement command/query handlers using primary constructors in src/ShoppingList.Application/[Commands|Queries]/[FeatureName]/
+- [ ] T019 [US1] Create Ardalis specifications in src/ShoppingList.Application/Specifications/[SpecificationName].cs
+- [ ] T020 [US1] Implement repository interfaces in src/ShoppingList.Infrastructure.Db/Repositories/
+- [ ] T021 [US1] Create EF Core migrations in src/ShoppingList.Infrastructure.Db/Migrations/
+- [ ] T022 [US1] Implement minimal API endpoints in src/ShoppingList.RestApi/Endpoints/[FeatureName].cs
+- [ ] T023 [US1] Add validation and error handling using expression-bodied members where appropriatecation]/[file].py
 - [ ] T016 [US1] Add validation and error handling
 - [ ] T017 [US1] Add logging for user story 1 operations
 
