@@ -33,7 +33,7 @@ RestApi → Application → Domain
 ```
 
 - **`src/ShoppingList.Domain`** — Core business entities, value objects, and domain events. Contains business logic and invariants. No external dependencies.
-- **`src/ShoppingList.Application`** — Use case orchestration (CQRS commands/queries and handlers), pre-validation via FluentValidation, and dispatch via Mediator.Net. Depends only on Domain.
+- **`src/ShoppingList.Application`** — Use case orchestration (CQRS commands/queries and handlers), pre-validation via FluentValidation, and dispatch via WolverineFx. Depends only on Domain.
 - **`src/ShoppingList.Infrastructure.Db`** — EF Core DbContext, repositories, and migrations. Depends only on Domain.
 - **`src/ShoppingList.RestApi`** — ASP.NET Core Minimal API with OpenAPI. Depends on Application and Infrastructure.Db.
 - **`env/ShoppingList.AppHost`** — .NET Aspire orchestration host for local development. Runs the API as `"api-rest"`.

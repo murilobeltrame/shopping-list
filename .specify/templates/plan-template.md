@@ -12,7 +12,7 @@
 ## Technical Context
 
 **Language/Version**: .NET 10 (SDK 10.0.100), C# 13  
-**Primary Dependencies**: ASP.NET Core, Entity Framework Core, Ardalis.Specification, Mediator.Net, FluentValidation  
+**Primary Dependencies**: ASP.NET Core, Entity Framework Core, Ardalis.Specification, WolverineFx, FluentValidation  
 **Storage**: [Specify database: PostgreSQL, SQL Server, or NEEDS CLARIFICATION]  
 **Testing**: xUnit, Shouldly (assertions), AutoBogus (fake data), TestContainers (real DB tests)  
 **Target Platform**: ASP.NET Core REST API, .NET Aspire orchestration for local development  
@@ -32,7 +32,7 @@ Verify compliance with ShoppingList Constitution (`.specify/memory/constitution.
 - ✅ **III. Specification Pattern**: Are all queries using Ardalis.Specification?
 - ✅ **IV. Real Database Testing**: Are TestContainers planned for DB integration tests?
 - ✅ **V. Domain Entity Integrity**: Do entities avoid public default constructors and enforce behavior via instance methods?
-- ✅ **VI. CQRS Messaging & Validation**: Are handlers dispatched with Mediator.Net and pre-validations implemented with FluentValidation?
+- ✅ **VI. CQRS Messaging & Validation**: Are handlers dispatched with WolverineFx and pre-validations implemented with FluentValidation?
 - ✅ **VII. Modern C# Style Rules**: Are primary constructors/expression-bodied members preferred and `var` avoided?
 
 If any violations are needed, document justification in Complexity Tracking section below.

@@ -1,15 +1,13 @@
 <!--
-Sync Impact Report - Version 2.0.0 (2026-03-01)
+Sync Impact Report - Version 2.0.1 (2026-03-01)
 ================================================================
-VERSION CHANGE: 1.0.0 → 2.0.0
-BUMP RATIONALE: Backward-incompatible governance redefinition for mediator,
-application responsibilities, and domain entity construction rules.
+VERSION CHANGE: 2.0.0 → 2.0.1
+BUMP RATIONALE: PATCH - Tool substitution (Mediator.Net → WolverineFx) without
+governance redefinition. CQRS pattern and validation boundaries remain identical;
+only implementation library changed.
 
 MODIFIED PRINCIPLES:
-  - I. Clean Architecture & Dependency Inversion → I. Domain-Centric Clean Architecture
-  - V. Modern C# Idioms → V. Domain Entity Integrity & Construction
-  - VI. CQRS Pattern → VI. CQRS Messaging & Validation Boundaries
-  - VII. Explicit Types Everywhere → VII. Modern C# Style Rules
+  - VI. CQRS Messaging & Validation Boundaries (dispatcher updated: Mediator.Net → WolverineFx)
 
 ADDED SECTIONS:
   - None
@@ -18,10 +16,9 @@ REMOVED SECTIONS:
   - None
 
 TEMPLATES REQUIRING UPDATES:
-  ✅ .specify/templates/plan-template.md
-  ✅ .specify/templates/tasks-template.md
   ✅ .github/copilot-instructions.md
-  ⚠ .specify/templates/commands/*.md (directory not present)
+  ✅ .specify/templates/plan-template.md
+  ⚠ .specify/templates/tasks-template.md (no template updates needed; tool-agnostic)
 
 FOLLOW-UP TODOs: None
 ================================================================
@@ -105,10 +102,10 @@ states and keep invariants enforceable at all times.
 
 ### VI. CQRS Messaging & Validation Boundaries
 
-**CQRS MUST be implemented in Application using Mediator.Net and FluentValidation.**
+**CQRS MUST be implemented in Application using WolverineFx and FluentValidation.**
 
 - Commands modify state; queries return data and MUST NOT mutate state.
-- `Mediator.Net` is the mandatory dispatching library (MediatR is prohibited).
+- `WolverineFx` is the mandatory dispatching library (MediatR and Mediator.Net are prohibited).
 - Application request pre-validation MUST be implemented with FluentValidation.
 - Validators handle input and boundary rules only; domain rules remain in Domain.
 - Handlers coordinate repositories, domain behavior, and transaction boundaries.
@@ -138,7 +135,7 @@ while preserving business logic authority in Domain.
 **Mandatory Libraries**:
 
 - Data Access: Entity Framework Core, Ardalis.Specification
-- Application Flow: Mediator.Net, FluentValidation
+- Application Flow: WolverineFx, FluentValidation
 - Testing: xUnit, Shouldly, AutoBogus, TestContainers
 - Observability: OpenTelemetry
 
@@ -186,4 +183,4 @@ while preserving business logic authority in Domain.
 - PR review MUST verify all applicable MUST statements.
 - Any justified violation MUST be documented in `plan.md` Complexity Tracking.
 
-**Version**: 2.0.0 | **Ratified**: 2026-02-28 | **Last Amended**: 2026-03-01
+**Version**: 2.0.1 | **Ratified**: 2026-02-28 | **Last Amended**: 2026-03-01
