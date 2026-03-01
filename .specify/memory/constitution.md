@@ -1,29 +1,29 @@
 <!--
-Sync Impact Report - Version 1.0.0 (2026-02-28)
+Sync Impact Report - Version 2.0.0 (2026-03-01)
 ================================================================
-VERSION CHANGE: [INITIAL] → 1.0.0
-BUMP RATIONALE: Initial constitution creation for ShoppingList project
+VERSION CHANGE: 1.0.0 → 2.0.0
+BUMP RATIONALE: Backward-incompatible governance redefinition for mediator,
+application responsibilities, and domain entity construction rules.
 
-MODIFIED PRINCIPLES: N/A (initial creation)
+MODIFIED PRINCIPLES:
+  - I. Clean Architecture & Dependency Inversion → I. Domain-Centric Clean Architecture
+  - V. Modern C# Idioms → V. Domain Entity Integrity & Construction
+  - VI. CQRS Pattern → VI. CQRS Messaging & Validation Boundaries
+  - VII. Explicit Types Everywhere → VII. Modern C# Style Rules
+
 ADDED SECTIONS:
-  - I. Clean Architecture & Dependency Inversion
-  - II. Test-First Development (NON-NEGOTIABLE)
-  - III. Specification Pattern for Data Access
-  - IV. Real Database Testing
-  - V. Modern C# Idioms
-  - VI. CQRS Pattern
-  - VII. Explicit Types Everywhere
-  - Technology Stack & Dependencies
-  - Code Quality & Architecture Enforcement
+  - None
 
-REMOVED SECTIONS: N/A (initial creation)
+REMOVED SECTIONS:
+  - None
 
 TEMPLATES REQUIRING UPDATES:
-  ✅ plan-template.md - Aligned Constitution Check section with 7 principles
-  ✅ spec-template.md - Aligned requirements structure with Clean Architecture
-  ✅ tasks-template.md - Aligned task categorization with TDD and layer structure
+  ✅ .specify/templates/plan-template.md
+  ✅ .specify/templates/tasks-template.md
+  ✅ .github/copilot-instructions.md
+  ⚠ .specify/templates/commands/*.md (directory not present)
 
-FOLLOW-UP TODOs: None - all placeholders resolved
+FOLLOW-UP TODOs: None
 ================================================================
 -->
 
@@ -31,202 +31,159 @@ FOLLOW-UP TODOs: None - all placeholders resolved
 
 ## Core Principles
 
-### I. Clean Architecture & Dependency Inversion
+### I. Domain-Centric Clean Architecture
 
 **Dependencies MUST flow inward**: RestApi → Application → Domain; Infrastructure.Db → Domain only.
 
-- Domain layer has ZERO external dependencies (pure business logic)
-- Application layer depends ONLY on Domain (use cases, CQRS handlers)
-- Infrastructure.Db depends ONLY on Domain (EF Core, repositories, migrations)
-- RestApi depends on Application and Infrastructure.Db (composition root)
-- All layers use file-scoped namespaces matching folder structure
-- Layer boundaries are enforced by `ShoppingList.Architecture.Tests`
+- Domain layer has ZERO external dependencies and contains ALL business rules,
+  invariants, and state transitions.
+- Application layer orchestrates use cases, transactions, and integration flow;
+  Application MUST NOT host core business rules.
+- Infrastructure.Db depends ONLY on Domain for persistence concerns.
+- RestApi depends on Application and Infrastructure.Db as composition root.
+- Layer boundaries are enforced by `ShoppingList.Architecture.Tests`.
 
-**Rationale**: Dependency inversion ensures testability, maintainability, and business logic independence from infrastructure concerns.
+**Rationale**: Centralizing business logic in Domain protects invariants and
+keeps behavior independent from delivery and persistence concerns.
 
 ### II. Test-First Development (NON-NEGOTIABLE)
 
-**TDD is MANDATORY for all features**. The Red-Green-Refactor cycle is strictly enforced:
+**TDD is MANDATORY for all features** with strict Red-Green-Refactor:
 
-1. Write test using Shouldly assertions
-2. Verify test FAILS (Red)
-3. Implement minimal code to pass (Green)
-4. Refactor while keeping tests green (Refactor)
+1. Write tests first using Shouldly assertions.
+2. Confirm tests fail.
+3. Implement the minimum code to pass.
+4. Refactor safely while keeping tests green.
 
-**Test structure requirements**:
+**Test requirements**:
 
-- One test project per source layer (Domain.Tests, Application.Tests, Infrastructure.Db.Tests, RestApi.Tests, Architecture.Tests)
-- Use Shouldly library for all assertions (e.g., `result.ShouldBe(expected)`)
-- Use AutoBogus library to generate fake test data
-- Test naming: `[MethodName]_[Scenario]_[ExpectedResult]`
-- Arrange-Act-Assert pattern strictly enforced
+- One test project per source layer plus architecture tests.
+- Shouldly MUST be used for assertions.
+- AutoBogus MUST be used for fake data generation.
+- Tests use Arrange-Act-Assert with descriptive names.
 
-**Rationale**: Test-first ensures features are testable by design, catches regressions early, and serves as living documentation.
+**Rationale**: Test-first development ensures behavior is specified before
+implementation and prevents regressions.
 
 ### III. Specification Pattern for Data Access
 
-**ALL Entity Framework Core queries MUST use Ardalis.Specification library**. Direct DbSet queries are prohibited except in specifications.
+**ALL EF Core queries MUST use Ardalis.Specification**.
 
-- Create specification classes inheriting from `Specification<TEntity>`
-- Encapsulate query logic, filtering, includes, and ordering in specifications
-- Repository pattern uses `IRepository<T>` from Ardalis.Specification
-- Keep specifications in Application layer, implementations in Infrastructure.Db
-- Specifications MUST be unit testable without database
+- Query logic, includes, ordering, and pagination MUST be encapsulated in
+  specification classes.
+- Direct ad-hoc `DbSet` querying outside specifications is prohibited.
+- Repositories MUST consume specifications for reads.
 
-**Example**:
-
-```csharp
-public sealed class ActiveItemsWithCategorySpec : Specification<ShoppingItem>
-{
-    public ActiveItemsWithCategorySpec() =>
-        Query
-            .Where(item => item.IsActive)
-            .Include(item => item.Category)
-            .OrderBy(item => item.Name);
-}
-```
-
-**Rationale**: Specification pattern provides reusable, testable query logic while maintaining separation from infrastructure details.
+**Rationale**: Specifications make query behavior reusable, composable, and
+testable.
 
 ### IV. Real Database Testing
 
-**Database tests MUST run against real database instances using TestContainers**. In-memory databases are prohibited for integration tests.
+**Integration database tests MUST run against real DB engines with TestContainers**.
 
-- Use TestContainers to spin up PostgreSQL/SQL Server containers for tests
-- Infrastructure.Db.Tests project contains integration tests with real DbContext
-- Each test class disposes container after test execution
-- Migrations MUST be tested against real database schema
-- Test data setup uses real EF Core operations, not manual SQL
+- In-memory providers are prohibited for integration and migration testing.
+- Infrastructure.Db tests MUST verify migrations and relational behavior on
+  real containers.
+- Test fixtures MUST create and dispose containers predictably.
 
-**Rationale**: In-memory databases have behavioral differences from production databases. TestContainers ensure tests catch real-world database issues.
+**Rationale**: Real-database testing avoids false confidence caused by
+behavioral differences in in-memory providers.
 
-### V. Modern C# Idioms
+### V. Domain Entity Integrity & Construction
 
-**Prefer modern C# language features** for conciseness and immutability:
+**Domain entities MUST protect invariants through controlled construction and behavior.**
 
-- **Primary constructors** MUST be used for dependency injection and simple initialization
-- **Expression-bodied members** (=>) MUST be used for properties and accessors
-- Methods and full constructors use block syntax
-- File-scoped namespaces (enforced via `.editorconfig`)
-- Record types for DTOs and value objects where immutability is desired
+- Domain entities MUST NOT expose a public parameterless constructor.
+- Entity creation MUST happen through explicit factory methods and/or
+  non-default constructors that enforce invariants.
+- State changes MUST occur through entity instance methods, not property
+  setters from outside the aggregate.
+- Invalid state transitions MUST be rejected in Domain methods.
 
-**Example**:
+**Rationale**: Controlled construction and encapsulated behavior prevent invalid
+states and keep invariants enforceable at all times.
 
-```csharp
-public sealed class ShoppingListService(IRepository<ShoppingList> repository)
-{
-    private readonly IRepository<ShoppingList> _repository = repository;
-    
-    public int Count => _repository.CountAsync().Result;
-}
-```
+### VI. CQRS Messaging & Validation Boundaries
 
-**Rationale**: Primary constructors reduce boilerplate; expression-bodied members improve readability for simple members.
+**CQRS MUST be implemented in Application using Mediator.Net and FluentValidation.**
 
-### VI. CQRS Pattern
+- Commands modify state; queries return data and MUST NOT mutate state.
+- `Mediator.Net` is the mandatory dispatching library (MediatR is prohibited).
+- Application request pre-validation MUST be implemented with FluentValidation.
+- Validators handle input and boundary rules only; domain rules remain in Domain.
+- Handlers coordinate repositories, domain behavior, and transaction boundaries.
 
-**Command-Query Responsibility Segregation MUST be applied** in the Application layer:
+**Rationale**: Clear boundaries keep validation and orchestration in Application
+while preserving business logic authority in Domain.
 
-- Commands modify state, return void or simple results
-- Queries return data, NEVER modify state
-- Handlers are separate classes: `CommandHandler`, `QueryHandler`
-- Commands and Queries are immutable record types
-- MediatR or similar pattern for handler dispatching
+### VII. Modern C# Style Rules
 
-**Structure**:
+**C# code MUST follow project style constraints for readability and consistency.**
 
-```
-Application/
-├── Commands/
-│   ├── CreateShoppingList/
-│   │   ├── CreateShoppingListCommand.cs
-│   │   └── CreateShoppingListCommandHandler.cs
-├── Queries/
-│   ├── GetShoppingList/
-│   │   ├── GetShoppingListQuery.cs
-│   │   └── GetShoppingListQueryHandler.cs
-```
+- Prefer primary constructors where applicable.
+- Prefer expression-bodied members for simple members/accessors.
+- `var` is prohibited; explicit types are required.
+- Use file-scoped namespaces and project naming conventions from `.editorconfig`.
 
-**Rationale**: CQRS provides clear separation of concerns, simplifies testing, and enables independent scaling of read/write operations.
-
-### VII. Explicit Types Everywhere
-
-**The `var` keyword is PROHIBITED** throughout the codebase. All variable declarations MUST use explicit types.
-
-- Local variables: `List<string> items = new();` not `var items = new List<string>();`
-- Return types always explicit
-- Enforced via `.editorconfig`: `csharp_style_var_*` all set to `false`
-- Exception: `foreach` with complex generic types may use `var` when type is obvious from context
-
-**Rationale**: Explicit types improve code readability, especially for developers unfamiliar with the codebase, and reduce cognitive load during code review.
+**Rationale**: Consistent style reduces cognitive load and review friction.
 
 ## Technology Stack & Dependencies
 
 **Framework & Runtime**:
 
-- .NET 10 (SDK 10.0.100) as specified in `global.json`
-- C# 13 language features
-- ASP.NET Core Minimal APIs for REST endpoints
-- .NET Aspire for orchestration (local development)
+- .NET 10 (SDK 10.0.100) and C# 13
+- ASP.NET Core Minimal APIs
+- .NET Aspire for local orchestration
 
 **Mandatory Libraries**:
 
-- **Data Access**: Entity Framework Core, Ardalis.Specification
-- **Testing**: xUnit, Shouldly, AutoBogus, TestContainers
-- **Observability**: OpenTelemetry (via ServiceDefaults)
-- **API**: ASP.NET Core OpenAPI/Swagger
+- Data Access: Entity Framework Core, Ardalis.Specification
+- Application Flow: Mediator.Net, FluentValidation
+- Testing: xUnit, Shouldly, AutoBogus, TestContainers
+- Observability: OpenTelemetry
 
 **Project Structure Enforcement**:
 
 - Source: `src/` (Domain, Application, Infrastructure.Db, RestApi)
-- Tests: `test/` (one test project per source project + Architecture.Tests)
+- Tests: `test/` (one project per source layer + Architecture.Tests)
 - Environment: `env/` (AppHost, ServiceDefaults)
-- Aspire runs API as `"api-rest"` service
 
 ## Code Quality & Architecture Enforcement
 
 **Automated Enforcement**:
 
-- `.editorconfig` enforces naming conventions and code style
-- `ShoppingList.Architecture.Tests` validates layer dependencies using ArchUnitNET or NetArchTest
-- All projects MUST build without warnings (`dotnet build`)
-- All tests MUST pass before merge (`dotnet test`)
+- Architecture tests MUST enforce dependency direction and layer isolation.
+- Build and tests MUST pass before merge.
+- Reviews MUST reject business-rule leakage from Domain into Application/API.
 
-**Naming Conventions** (`.editorconfig` enforced):
+**Quality Gates**:
 
-- Private fields: `_camelCase`
-- Private static fields: `s_camelCase`
-- Interfaces: `IPascalCase`
-- Type parameters: `TPascalCase`
-- Types, methods, properties: `PascalCase`
-- Parameters, locals: `camelCase`
-
-**Health & Observability**:
-
-- `/health` endpoint for liveness checks
-- `/alive` endpoint for readiness checks
-- Structured logging via OpenTelemetry
-- Distributed tracing for request flows
+- New requests MUST include FluentValidation validators in Application.
+- New domain entities MUST avoid public default constructors.
+- New aggregate behavior MUST be implemented as entity instance methods.
 
 ## Governance
 
-**Authority**: This constitution supersedes all other development practices and decisions.
+**Authority**: This constitution supersedes all other engineering practices.
 
 **Amendment Process**:
 
-1. Proposed changes documented with rationale
-2. Impact analysis on existing code and templates
-3. Version bump per semantic versioning (MAJOR.MINOR.PATCH)
-4. Sync impact report prepended to constitution
-5. Update dependent templates and documentation
+1. Document change intent and rationale.
+2. Classify version bump by governance impact.
+3. Update constitution and prepend sync impact report.
+4. Propagate changes to templates and runtime guidance.
+5. Validate compliance checks and quality gates.
 
-**Compliance**:
+**Versioning Policy**:
 
-- All feature specs MUST include Constitution Check section
-- Architecture tests MUST pass before any PR merge
-- Code reviews MUST verify adherence to all principles
-- Complexity violations MUST be justified in `plan.md`
+- MAJOR: backward-incompatible principle redefinition/removal.
+- MINOR: new principle/section or materially expanded governance.
+- PATCH: clarification-only wording with no governance behavior change.
 
-**Development Guidance**: For active development, reference `.github/copilot-instructions.md` for build commands, architecture overview, and conventions.
+**Compliance Review Expectations**:
 
-**Version**: 1.0.0 | **Ratified**: 2026-02-28 | **Last Amended**: 2026-02-28
+- Every feature plan MUST pass Constitution Check before implementation.
+- PR review MUST verify all applicable MUST statements.
+- Any justified violation MUST be documented in `plan.md` Complexity Tracking.
+
+**Version**: 2.0.0 | **Ratified**: 2026-02-28 | **Last Amended**: 2026-03-01

@@ -5,254 +5,145 @@ description: "Task list template for feature implementation"
 
 # Tasks: [FEATURE NAME]
 
-**Input**: Design documents from `/specs/[###-feature-name]/`
-**Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
+**Input**: Design documents from `/specs/[###-feature-name]/`  
+**Prerequisites**: plan.md (required), spec.md (required), research.md, data-model.md, contracts/
 
-**Tests**: The examples below include test tasks. Tests are OPTIONAL - only include them if explicitly requested in the feature specification.
+**Tests**: Tests are REQUIRED by constitution (TDD), unless explicitly waived and justified in `plan.md`.
 
-**Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
+**Organization**: Tasks are grouped by user story so each story can be implemented and tested independently.
 
 ## Format: `[ID] [P?] [Story] Description`
 
-- **[P]**: Can run in parallel (different files, no dependencies)
-- **[Story]**: Which user story this task belongs to (e.g., US1, US2, US3)
-- Include exact file paths in descriptions
+- **[P]**: Can run in parallel (different files, no direct dependency)
+- **[Story]**: User story identifier (US1, US2, US3)
+- Include exact file paths in every task
 
 ## Path Conventions
 
-- **Clean Architecture (.NET)**: `src/[ProjectName].Domain/`, `src/[ProjectName].Application/`, `src/[ProjectName].Infrastructure.Db/`, `src/[ProjectName].RestApi/`
-- **Tests (.NET)**: `test/[ProjectName].Domain.Tests/`, `test/[ProjectName].Application.Tests/`, `test/[ProjectName].Infrastructure.Db.Tests/`, `test/[ProjectName].RestApi.Tests/`, `test/[ProjectName].Architecture.Tests/`
-- **Aspire Environment**: `env/[ProjectName].AppHost/`, `env/[ProjectName].ServiceDefaults/`
-- Paths shown below assume ShoppingList project - adjust based on actual project name in plan.md
-
-<!-- 
-  ============================================================================
-  IMPORTANT: The tasks below are SAMPLE TASKS for illustration purposes only.
-  
-  The /speckit.tasks command MUST replace these with actual tasks based on:
-  - User stories from spec.md (with their priorities P1, P2, P3...)
-  - Feature requirements from plan.md
-  - Entities from data-model.md
-  - Endpoints from contracts/
-  
-  Tasks MUST be organized by user story so each story can be:
-  - Implemented independently
-  - Tested independently
-  - Delivered as an MVP increment
-  
-  DO NOT keep these sample tasks in the generated tasks.md file.
-  ============================================================================
--->
+- **Source**: `src/[Project].Domain/`, `src/[Project].Application/`, `src/[Project].Infrastructure.Db/`, `src/[Project].RestApi/`
+- **Tests**: `test/[Project].Domain.Tests/`, `test/[Project].Application.Tests/`, `test/[Project].Infrastructure.Db.Tests/`, `test/[Project].RestApi.Tests/`, `test/[Project].Architecture.Tests/`
+- **Environment**: `env/[Project].AppHost/`, `env/[Project].ServiceDefaults/`
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-**Purpose**: Project initialization and basic structure
+**Purpose**: Initialize solution and baseline conventions.
 
-- [ ] T001 Create project structure per implementation plan
-- [ ] T002 Initialize .NET solution with Clean Architecture projects (Domain, Application, Infrastructure.Db, RestApi)
-- [ ] T003 [P] Configure .editorconfig for naming conventions and code style
-- [ ] T004 [P] Setup Aspire orchestration (AppHost, ServiceDefaults)
+- [ ] T001 Create/verify project structure per implementation plan
+- [ ] T002 Add required packages (Ardalis.Specification, Mediator.Net, FluentValidation, Shouldly, AutoBogus, TestContainers)
+- [ ] T003 [P] Configure `.editorconfig` and analyzers
+- [ ] T004 [P] Configure Aspire host/service defaults as needed
 
 ---
 
 ## Phase 2: Foundational (Blocking Prerequisites)
 
-**Purpose**: Core infrastructure that MUST be complete before ANY user story can be implemented
+**Purpose**: Core architecture that blocks all user stories until complete.
 
-**⚠️ CRITICAL**: No user story work can begin until this phase is complete
+- [ ] T005 Configure EF Core DbContext and migrations in `src/[Project].Infrastructure.Db/`
+- [ ] T006 [P] Implement Ardalis.Specification repository wiring
+- [ ] T007 [P] Configure Mediator.Net pipeline and handler registration in `src/[Project].Application/`
+- [ ] T008 [P] Add FluentValidation pipeline behavior and validators setup in `src/[Project].Application/`
+- [ ] T009 Configure TestContainers base fixtures for integration tests
+- [ ] T010 Add/extend architecture tests for layer boundaries and dependency direction
 
-Examples of foundational tasks (adjust based on your project):
-Entity Framework Core DbContext and migrations framework in Infrastructure.Db
-- [ ] T005 [P] Configure Ardalis.Specification repository pattern
-- [ ] T006 [P] Setup minimal API routing structure in RestApi project
-- [ ] T007 Setup MediatR or CQRS handler infrastructure in Application layer
-- [ ] T008 Configure OpenTelemetry logging and tracing via ServiceDefaults
-- [ ] T009 Setup TestContainers configuration for database integration tests
-- [ ] T010 Create Architecture.Tests project with layer dependency rulesstructure
-- [ ] T009 Setup environment configuration management
-
-**Checkpoint**: Foundation ready - user story implementation can now begin in parallel
+**Checkpoint**: Foundation complete — user stories can proceed.
 
 ---
 
 ## Phase 3: User Story 1 - [Title] (Priority: P1) 🎯 MVP
 
-**Goal**: [Brief description of what this story delivers]
+**Goal**: [Brief outcome delivered by this story]  
+**Independent Test**: [How this story is tested independently]
 
-**Independent Test**: [How to verify this story works on its own]
+### Tests for User Story 1 (REQUIRED)
 
-### Tests for User Story 1 (OPTIO using Shouldly assertions, ensure they FAIL before implementation**
+> Write tests first, confirm failure, then implement.
 
-- [ ] T011 [P] [US1] Unit tests for domain entities in test/ShoppingList.Domain.Tests/Entities/[EntityName]Tests.cs
-- [ ] T012 [P] [US1] Unit tests for command handlers in test/ShoppingList.Application.Tests/Commands/[CommandName]HandlerTests.cs
-- [ ] T013 [P] [US1] Integration tests with TestContainers in test/ShoppingList.Infrastructure.Db.Tests/[Feature]RepositoryTests.cs
-- [ ] T014 [P] [US1] API endpoint tests in test/ShoppingList.RestApi.Tests/Endpoints/[Feature]EndpointTests.cs
+- [ ] T011 [P] [US1] Domain tests with Shouldly and AutoBogus in `test/[Project].Domain.Tests/`
+- [ ] T012 [P] [US1] Application handler/validator tests in `test/[Project].Application.Tests/`
+- [ ] T013 [P] [US1] Infrastructure integration tests with TestContainers in `test/[Project].Infrastructure.Db.Tests/`
+- [ ] T014 [P] [US1] REST API endpoint tests in `test/[Project].RestApi.Tests/`
 
 ### Implementation for User Story 1
 
-- [ ] T015 [P] [US1] Create domain entity in src/ShoppingList.Domain/Entities/[EntityName].cs
-- [ ] T016 [P] [US1] Create value objects in src/ShoppingList.Domain/ValueObjects/[ValueObjectName].cs
-- [ ] T017 [P] [US1] Create command/query records in src/ShoppingList.Application/[Commands|Queries]/[FeatureName]/
-- [ ] T018 [US1] Implement command/query handlers using primary constructors in src/ShoppingList.Application/[Commands|Queries]/[FeatureName]/
-- [ ] T019 [US1] Create Ardalis specifications in src/ShoppingList.Application/Specifications/[SpecificationName].cs
-- [ ] T020 [US1] Implement repository interfaces in src/ShoppingList.Infrastructure.Db/Repositories/
-- [ ] T021 [US1] Create EF Core migrations in src/ShoppingList.Infrastructure.Db/Migrations/
-- [ ] T022 [US1] Implement minimal API endpoints in src/ShoppingList.RestApi/Endpoints/[FeatureName].cs
-- [ ] T023 [US1] Add validation and error handling using expression-bodied members where appropriatecation]/[file].py
-- [ ] T016 [US1] Add validation and error handling
-- [ ] T017 [US1] Add logging for user story 1 operations
+- [ ] T015 [P] [US1] Create/extend entity in `src/[Project].Domain/Entities/[EntityName].cs` without public default constructor
+- [ ] T016 [US1] Add factory method(s) and behavior instance methods in Domain entity
+- [ ] T017 [P] [US1] Implement command/query contracts in `src/[Project].Application/[Commands|Queries]/[Feature]/`
+- [ ] T018 [US1] Implement FluentValidation validators in `src/[Project].Application/Validators/`
+- [ ] T019 [US1] Implement Mediator.Net handlers for command/query orchestration
+- [ ] T020 [US1] Implement specification(s) in `src/[Project].Application/Specifications/`
+- [ ] T021 [US1] Implement persistence adapters in `src/[Project].Infrastructure.Db/`
+- [ ] T022 [US1] Implement endpoint(s) in `src/[Project].RestApi/`
 
-**Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
+**Checkpoint**: User Story 1 is independently functional and testable.
 
 ---
 
 ## Phase 4: User Story 2 - [Title] (Priority: P2)
 
-**Goal**: [Brief description of what this story delivers]
+**Goal**: [Brief outcome delivered by this story]  
+**Independent Test**: [How this story is tested independently]
 
-**Independent Test**: [How to verify this story works on its own]
+### Tests for User Story 2 (REQUIRED)
 
-### Tests for User Story 2 (OPTIONAL - only if tests requested) ⚠️
-
-- [ ] T018 [P] [US2] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T019 [P] [US2] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T023 [P] [US2] Domain/Application tests with Shouldly + AutoBogus
+- [ ] T024 [P] [US2] Integration tests with TestContainers
+- [ ] T025 [P] [US2] API tests
 
 ### Implementation for User Story 2
 
-- [ ] T020 [P] [US2] Create [Entity] model in src/models/[entity].py
-- [ ] T021 [US2] Implement [Service] in src/services/[service].py
-- [ ] T022 [US2] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T023 [US2] Integrate with User Story 1 components (if needed)
+- [ ] T026 [P] [US2] Implement/extend Domain behavior first
+- [ ] T027 [US2] Implement Application validator + Mediator.Net handler
+- [ ] T028 [US2] Implement specification/persistence/API integration
 
-**Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
+**Checkpoint**: User Stories 1 and 2 both work independently.
 
 ---
 
 ## Phase 5: User Story 3 - [Title] (Priority: P3)
 
-**Goal**: [Brief description of what this story delivers]
+**Goal**: [Brief outcome delivered by this story]  
+**Independent Test**: [How this story is tested independently]
 
-**Independent Test**: [How to verify this story works on its own]
+### Tests for User Story 3 (REQUIRED)
 
-### Tests for User Story 3 (OPTIONAL - only if tests requested) ⚠️
-
-- [ ] T024 [P] [US3] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T025 [P] [US3] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T029 [P] [US3] Domain/Application tests
+- [ ] T030 [P] [US3] Integration tests with TestContainers
+- [ ] T031 [P] [US3] API tests
 
 ### Implementation for User Story 3
 
-- [ ] T026 [P] [US3] Create [Entity] model in src/models/[entity].py
-- [ ] T027 [US3] Implement [Service] in src/services/[service].py
-- [ ] T028 [US3] Implement [endpoint/feature] in src/[location]/[file].py
+- [ ] T032 [P] [US3] Implement/extend Domain behavior first
+- [ ] T033 [US3] Implement Application validator + Mediator.Net handler
+- [ ] T034 [US3] Implement specification/persistence/API integration
 
-**Checkpoint**: All user stories should now be independently functional
-
----
-
-[Add more user story phases as needed, following the same pattern]
+**Checkpoint**: All stories are independently functional.
 
 ---
 
-## Phase N: Polish & Cross-Cutting Concerns
+## Phase N: Polish & Cross-Cutting
 
-**Purpose**: Improvements that affect multiple user stories
-
-- [ ] TXXX [P] Documentation updates in docs/
-- [ ] TXXX Code cleanup and refactoring
-- [ ] TXXX Performance optimization across all stories
-- [ ] TXXX [P] Additional unit tests (if requested) in tests/unit/
-- [ ] TXXX Security hardening
-- [ ] TXXX Run quickstart.md validation
+- [ ] T035 [P] Update docs and quickstart
+- [ ] T036 Refactor while preserving tests
+- [ ] T037 [P] Add missing architecture/compliance tests
+- [ ] T038 Verify no public default constructors on new/changed entities
+- [ ] T039 Run full test suite and fix story-scoped issues
 
 ---
 
 ## Dependencies & Execution Order
 
-### Phase Dependencies
+- Setup (Phase 1) starts immediately
+- Foundation (Phase 2) blocks all stories
+- Stories execute by priority (P1 → P2 → P3), parallel when feasible
+- Polish executes after selected stories are complete
 
-- **Setup (Phase 1)**: No dependencies - can start immediately
-- **Foundational (Phase 2)**: Depends on Setup completion - BLOCKS all user stories
-- **User Stories (Phase 3+)**: All depend on Foundational phase completion
-  - User stories can then proceed in parallel (if staffed)
-  - Or sequentially in priority order (P1 → P2 → P3)
-- **Polish (Final Phase)**: Depends on all desired user stories being complete
+## Constitution Alignment Checklist
 
-### User Story Dependencies
-
-- **User Story 1 (P1)**: Can start after Foundational (Phase 2) - No dependencies on other stories
-- **User Story 2 (P2)**: Can start after Foundational (Phase 2) - May integrate with US1 but should be independently testable
-- **User Story 3 (P3)**: Can start after Foundational (Phase 2) - May integrate with US1/US2 but should be independently testable
-
-### Within Each User Story
-
-- Tests (if included) MUST be written and FAIL before implementation
-- Models before services
-- Services before endpoints
-- Core implementation before integration
-- Story complete before moving to next priority
-
-### Parallel Opportunities
-
-- All Setup tasks marked [P] can run in parallel
-- All Foundational tasks marked [P] can run in parallel (within Phase 2)
-- Once Foundational phase completes, all user stories can start in parallel (if team capacity allows)
-- All tests for a user story marked [P] can run in parallel
-- Models within a story marked [P] can run in parallel
-- Different user stories can be worked on in parallel by different team members
-
----
-
-## Parallel Example: User Story 1
-
-```bash
-# Launch all tests for User Story 1 together (if tests requested):
-Task: "Contract test for [endpoint] in tests/contract/test_[name].py"
-Task: "Integration test for [user journey] in tests/integration/test_[name].py"
-
-# Launch all models for User Story 1 together:
-Task: "Create [Entity1] model in src/models/[entity1].py"
-Task: "Create [Entity2] model in src/models/[entity2].py"
-```
-
----
-
-## Implementation Strategy
-
-### MVP First (User Story 1 Only)
-
-1. Complete Phase 1: Setup
-2. Complete Phase 2: Foundational (CRITICAL - blocks all stories)
-3. Complete Phase 3: User Story 1
-4. **STOP and VALIDATE**: Test User Story 1 independently
-5. Deploy/demo if ready
-
-### Incremental Delivery
-
-1. Complete Setup + Foundational → Foundation ready
-2. Add User Story 1 → Test independently → Deploy/Demo (MVP!)
-3. Add User Story 2 → Test independently → Deploy/Demo
-4. Add User Story 3 → Test independently → Deploy/Demo
-5. Each story adds value without breaking previous stories
-
-### Parallel Team Strategy
-
-With multiple developers:
-
-1. Team completes Setup + Foundational together
-2. Once Foundational is done:
-   - Developer A: User Story 1
-   - Developer B: User Story 2
-   - Developer C: User Story 3
-3. Stories complete and integrate independently
-
----
-
-## Notes
-
-- [P] tasks = different files, no dependencies
-- [Story] label maps task to specific user story for traceability
-- Each user story should be independently completable and testable
-- Verify tests fail before implementing
-- Commit after each task or logical group
-- Stop at any checkpoint to validate story independently
-- Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence
+- [ ] Business rules are in Domain, not Application/API
+- [ ] Application pre-validation uses FluentValidation
+- [ ] Mediator.Net is used for dispatching (no MediatR)
+- [ ] Domain entities avoid public default constructors
+- [ ] Entity mutations use instance methods enforcing invariants
+- [ ] EF Core querying uses Ardalis.Specification
+- [ ] Integration DB tests use TestContainers

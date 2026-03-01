@@ -32,8 +32,8 @@ RestApi → Application → Domain
           Infrastructure.Db → Domain
 ```
 
-- **`src/ShoppingList.Domain`** — Core business entities, value objects, and domain events. No external dependencies.
-- **`src/ShoppingList.Application`** — Use cases (CQRS commands/queries and handlers). Depends only on Domain.
+- **`src/ShoppingList.Domain`** — Core business entities, value objects, and domain events. Contains business logic and invariants. No external dependencies.
+- **`src/ShoppingList.Application`** — Use case orchestration (CQRS commands/queries and handlers), pre-validation via FluentValidation, and dispatch via Mediator.Net. Depends only on Domain.
 - **`src/ShoppingList.Infrastructure.Db`** — EF Core DbContext, repositories, and migrations. Depends only on Domain.
 - **`src/ShoppingList.RestApi`** — ASP.NET Core Minimal API with OpenAPI. Depends on Application and Infrastructure.Db.
 - **`env/ShoppingList.AppHost`** — .NET Aspire orchestration host for local development. Runs the API as `"api-rest"`.
@@ -57,6 +57,11 @@ Layer boundary correctness is enforced by **`test/ShoppingList.Architecture.Test
 - **Expression-bodied** accessors and properties; not methods or constructors
 - `using` directives go **outside** the namespace, system directives sorted first
 - Readonly fields are enforced as warnings
+
+### Domain Modeling Rules
+- Domain entities must not expose a public default constructor
+- Use factory methods and instance methods to enforce invariants
+- Keep business logic in Domain; Application handles coordination and boundary pre-validation
 
 ### Project Structure
 - Source projects live under `src/`
