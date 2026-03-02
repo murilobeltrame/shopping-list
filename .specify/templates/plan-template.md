@@ -32,7 +32,7 @@ Verify compliance with ShoppingList Constitution (`.specify/memory/constitution.
 - ✅ **III. Specification Pattern**: Are all queries using Ardalis.Specification?
 - ✅ **IV. Real Database Testing**: Are TestContainers planned for DB integration tests?
 - ✅ **V. Domain Entity Integrity**: Do entities avoid public default constructors and enforce behavior via instance methods?
-- ✅ **VI. CQRS Messaging & Validation**: Are handlers dispatched with WolverineFx and pre-validations implemented with FluentValidation?
+- ✅ **VI. CQRS Messaging & Validation**: Are handlers dispatched with WolverineFx? Are validations implemented with FluentValidation (or domain enforcement where equivalent and clear)?
 - ✅ **VII. Modern C# Style Rules**: Are primary constructors/expression-bodied members preferred and `var` avoided?
 
 If any violations are needed, document justification in Complexity Tracking section below.

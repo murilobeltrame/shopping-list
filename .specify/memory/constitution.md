@@ -1,26 +1,26 @@
 <!--
-Sync Impact Report - Version 2.0.1 (2026-03-01)
+Sync Impact Report - Version 3.0.0 (2026-03-02)
 ================================================================
-VERSION CHANGE: 2.0.0 → 2.0.1
-BUMP RATIONALE: PATCH - Tool substitution (Mediator.Net → WolverineFx) without
-governance redefinition. CQRS pattern and validation boundaries remain identical;
-only implementation library changed.
+VERSION CHANGE: 2.0.1 → 3.0.0
+BUMP RATIONALE: MAJOR - Governance behavior change in Principle VI (FluentValidation
+from unconditional MUST to conditional MAY when domain invariants enforce same rules).
+This is backward-incompatible as it expands acceptable validation strategies.
 
 MODIFIED PRINCIPLES:
-  - VI. CQRS Messaging & Validation Boundaries (dispatcher updated: Mediator.Net → WolverineFx)
+  - VI. CQRS Messaging & Validation Boundaries (FluentValidation: MUST → conditional MAY)
 
 ADDED SECTIONS:
-  - None
+  - None (clarification within existing principle)
 
 REMOVED SECTIONS:
   - None
 
 TEMPLATES REQUIRING UPDATES:
-  ✅ .github/copilot-instructions.md
-  ✅ .specify/templates/plan-template.md
-  ⚠ .specify/templates/tasks-template.md (no template updates needed; tool-agnostic)
+  ✅ .specify/templates/plan-template.md (Constitution Check item VI updated)
+  ✅ .github/copilot-instructions.md (Application layer guidance aligned)
 
-FOLLOW-UP TODOs: None
+FOLLOW-UP TODOs:
+  - 001-shopping-list-domain feature plan/spec updated to reflect C2 (ownership deferred) & C3 (persistence via Ardalis.Specification)
 ================================================================
 -->
 
@@ -102,16 +102,20 @@ states and keep invariants enforceable at all times.
 
 ### VI. CQRS Messaging & Validation Boundaries
 
-**CQRS MUST be implemented in Application using WolverineFx and FluentValidation.**
+**CQRS MUST be implemented in Application using WolverineFx with validation strategy flexibility.**
 
 - Commands modify state; queries return data and MUST NOT mutate state.
 - `WolverineFx` is the mandatory dispatching library (MediatR and Mediator.Net are prohibited).
-- Application request pre-validation MUST be implemented with FluentValidation.
-- Validators handle input and boundary rules only; domain rules remain in Domain.
+- Application request pre-validation follows hybrid strategy:
+  - SHOULD use FluentValidation for boundary/input validation (e.g., string length, null checks, format rules).
+  - MAY omit FluentValidation when Domain construction/behavior already enforces the same invariants **without loss of error clarity at the boundary**.
+  - Example: If `ShoppingList.Create(owner)` throws ArgumentException for empty owner with clear message, Application MAY delegate validation to domain rather than redundantly validate in a validator.
+- Validators (when used) handle input and boundary rules only; domain rules remain in Domain.
 - Handlers coordinate repositories, domain behavior, and transaction boundaries.
 
-**Rationale**: Clear boundaries keep validation and orchestration in Application
-while preserving business logic authority in Domain.
+**Rationale**: Domain-centric validation keeps business logic in Domain where invariants
+are enforced; redundant validation frameworks add overhead without stronger guarantees.
+Clear, domain-enforced error messages provide sufficient boundary feedback.
 
 ### VII. Modern C# Style Rules
 
@@ -183,4 +187,4 @@ while preserving business logic authority in Domain.
 - PR review MUST verify all applicable MUST statements.
 - Any justified violation MUST be documented in `plan.md` Complexity Tracking.
 
-**Version**: 2.0.1 | **Ratified**: 2026-02-28 | **Last Amended**: 2026-03-01
+**Version**: 3.0.0 | **Ratified**: 2026-02-28 | **Last Amended**: 2026-03-02
