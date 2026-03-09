@@ -5,7 +5,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="WolverineFx.FluentValidation" Version="5.16.4" />
+    <PackageReference Include="WolverineFx.FluentValidation" Version="5.17.0" />
   </ItemGroup>
 
   <PropertyGroup>

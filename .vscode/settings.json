@@ -10,7 +10,10 @@
         ".specify/scripts/bash/": true,
         ".specify/scripts/powershell/": true,
         "git fetch": true,
-        "git ls-remote": true
+        "git ls-remote": true,
+        "git rev-parse": true,
+        "mkdir": true,
+        "dotnet test": true
     }
 }
 
