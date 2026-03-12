@@ -29,7 +29,7 @@ description: "Task list template for feature implementation"
 **Purpose**: Initialize solution and baseline conventions.
 
 - [ ] T001 Create/verify project structure per implementation plan
-- [ ] T002 Add required packages (Ardalis.Specification, Mediator.Net, FluentValidation, Shouldly, AutoBogus, TestContainers)
+- [ ] T002 Add required packages (Ardalis.Specification, Ardalis.Specification.EntityFrameworkCore, WolverineFx, FluentValidation if needed, Shouldly, AutoBogus, TestContainers)
 - [ ] T003 [P] Configure `.editorconfig` and analyzers
 - [ ] T004 [P] Configure Aspire host/service defaults as needed
 
@@ -40,9 +40,9 @@ description: "Task list template for feature implementation"
 **Purpose**: Core architecture that blocks all user stories until complete.
 
 - [ ] T005 Configure EF Core DbContext and migrations in `src/[Project].Infrastructure.Db/`
-- [ ] T006 [P] Implement Ardalis.Specification repository wiring
-- [ ] T007 [P] Configure Mediator.Net pipeline and handler registration in `src/[Project].Application/`
-- [ ] T008 [P] Add FluentValidation pipeline behavior and validators setup in `src/[Project].Application/`
+- [ ] T006 [P] Implement Ardalis.Specification repository wiring with Application abstractions and Infrastructure.Db EF concrete implementation
+- [ ] T007 [P] Configure WolverineFx pipeline and handler registration in `src/[Project].Application/`
+- [ ] T008 [P] Add FluentValidation pipeline behavior in `src/[Project].Application/` only when boundary validation is required beyond domain invariants
 - [ ] T009 Configure TestContainers base fixtures for integration tests
 - [ ] T010 Add/extend architecture tests for layer boundaries and dependency direction
 
@@ -69,8 +69,8 @@ description: "Task list template for feature implementation"
 - [ ] T015 [P] [US1] Create/extend entity in `src/[Project].Domain/Entities/[EntityName].cs` without public default constructor
 - [ ] T016 [US1] Add factory method(s) and behavior instance methods in Domain entity
 - [ ] T017 [P] [US1] Implement command/query contracts in `src/[Project].Application/[Commands|Queries]/[Feature]/`
-- [ ] T018 [US1] Implement FluentValidation validators in `src/[Project].Application/Validators/`
-- [ ] T019 [US1] Implement Mediator.Net handlers for command/query orchestration
+- [ ] T018 [US1] Implement FluentValidation validators in `src/[Project].Application/Validators/` only for boundary rules not already enforced with clear domain errors
+- [ ] T019 [US1] Implement WolverineFx handlers for command/query orchestration
 - [ ] T020 [US1] Implement specification(s) in `src/[Project].Application/Specifications/`
 - [ ] T021 [US1] Implement persistence adapters in `src/[Project].Infrastructure.Db/`
 - [ ] T022 [US1] Implement endpoint(s) in `src/[Project].RestApi/`
@@ -93,7 +93,7 @@ description: "Task list template for feature implementation"
 ### Implementation for User Story 2
 
 - [ ] T026 [P] [US2] Implement/extend Domain behavior first
-- [ ] T027 [US2] Implement Application validator + Mediator.Net handler
+- [ ] T027 [US2] Implement Application validator (if needed) + WolverineFx handler
 - [ ] T028 [US2] Implement specification/persistence/API integration
 
 **Checkpoint**: User Stories 1 and 2 both work independently.
@@ -114,7 +114,7 @@ description: "Task list template for feature implementation"
 ### Implementation for User Story 3
 
 - [ ] T032 [P] [US3] Implement/extend Domain behavior first
-- [ ] T033 [US3] Implement Application validator + Mediator.Net handler
+- [ ] T033 [US3] Implement Application validator (if needed) + WolverineFx handler
 - [ ] T034 [US3] Implement specification/persistence/API integration
 
 **Checkpoint**: All stories are independently functional.
@@ -141,9 +141,9 @@ description: "Task list template for feature implementation"
 ## Constitution Alignment Checklist
 
 - [ ] Business rules are in Domain, not Application/API
-- [ ] Application pre-validation uses FluentValidation
-- [ ] Mediator.Net is used for dispatching (no MediatR)
+- [ ] Application boundary validation strategy is explicit (FluentValidation when needed, otherwise clear domain enforcement)
+- [ ] WolverineFx is used for dispatching (no MediatR/Mediator.Net)
 - [ ] Domain entities avoid public default constructors
 - [ ] Entity mutations use instance methods enforcing invariants
-- [ ] EF Core querying uses Ardalis.Specification
+- [ ] Application uses Ardalis.Specification abstractions; Infrastructure.Db provides EF concrete implementations
 - [ ] Integration DB tests use TestContainers

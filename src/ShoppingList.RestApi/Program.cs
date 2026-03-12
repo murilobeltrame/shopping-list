@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.AddAzureNpgsqlDbContext<ApplicationContext>("database");
+builder.Services.AddShoppingListPersistence();
 
 builder.Host.UseWolverine(o => o.CodeGeneration.TypeLoadMode = TypeLoadMode.Auto);
 
