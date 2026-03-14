@@ -412,4 +412,19 @@ public class ShoppingListTests
         // Act & Assert
         Should.Throw<ArgumentException>(() => list.Copy(""));
     }
+
+    [Fact]
+    public void Create_GeneratesUniqueIds_ForTenThousandLists()
+    {
+        HashSet<Guid> ids = [];
+
+        for (int i = 0; i < 10_000; i++)
+        {
+            global::ShoppingList.Domain.Entities.ShoppingList list =
+                global::ShoppingList.Domain.Entities.ShoppingList.Create($"owner-{i}");
+            ids.Add(list.Id);
+        }
+
+        ids.Count.ShouldBe(10_000);
+    }
 }

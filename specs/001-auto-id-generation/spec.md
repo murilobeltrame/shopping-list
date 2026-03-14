@@ -2,7 +2,7 @@
 
 **Feature Branch**: `001-auto-id-generation`  
 **Created**: 2026-03-11  
-**Status**: Draft  
+**Status**: Ready for Implementation  
 **Input**: User description: "users should not be required to generate any Id. All Ids should be generated automatically"
 
 ## User Scenarios & Testing *(mandatory)*
@@ -74,7 +74,6 @@ As a user performing copy and follow-up actions, I receive valid generated IDs t
 
 - Create requests include null, empty, malformed, or duplicate client-supplied IDs.
 - Concurrent create operations generate unique IDs without collisions.
-- Import or migration scripts that previously expected caller-supplied IDs still produce valid entities with generated IDs.
 - Existing update/remove/purchase operations continue to require an existing persisted ID and are unaffected.
 
 ## Requirements *(mandatory)*
