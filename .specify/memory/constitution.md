@@ -1,26 +1,30 @@
 <!--
-Sync Impact Report - Version 3.0.0 (2026-03-02)
+Sync Impact Report - Version 3.1.0 (2026-03-11)
 ================================================================
-VERSION CHANGE: 2.0.1 → 3.0.0
-BUMP RATIONALE: MAJOR - Governance behavior change in Principle VI (FluentValidation
-from unconditional MUST to conditional MAY when domain invariants enforce same rules).
-This is backward-incompatible as it expands acceptable validation strategies.
+VERSION CHANGE: 3.0.0 → 3.1.0
+BUMP RATIONALE: MINOR - Principle III was materially expanded to require
+Ardalis.Specification abstractions as the repository contract in Application,
+with EF Core concrete implementation in Infrastructure.Db.
 
 MODIFIED PRINCIPLES:
-  - VI. CQRS Messaging & Validation Boundaries (FluentValidation: MUST → conditional MAY)
+  - III. Specification Pattern for Data Access → III. Specification-First Repository Pattern
 
 ADDED SECTIONS:
-  - None (clarification within existing principle)
+  - None
 
 REMOVED SECTIONS:
   - None
 
 TEMPLATES REQUIRING UPDATES:
-  ✅ .specify/templates/plan-template.md (Constitution Check item VI updated)
-  ✅ .github/copilot-instructions.md (Application layer guidance aligned)
+  ✅ .specify/templates/plan-template.md
+  ✅ .specify/templates/tasks-template.md
+  ✅ .github/copilot-instructions.md
+  ✅ .specify/memory/constitution.md (quality gates aligned)
+  ⚠ pending: .specify/templates/commands/*.md (directory does not exist in repository)
 
 FOLLOW-UP TODOs:
-  - 001-shopping-list-domain feature plan/spec updated to reflect C2 (ownership deferred) & C3 (persistence via Ardalis.Specification)
+  - TODO(COMMAND_TEMPLATES): Add `.specify/templates/commands/` if command templates are introduced,
+    then align wording with Constitution v3.1.0.
 ================================================================
 -->
 
@@ -62,17 +66,23 @@ keeps behavior independent from delivery and persistence concerns.
 **Rationale**: Test-first development ensures behavior is specified before
 implementation and prevents regressions.
 
-### III. Specification Pattern for Data Access
+### III. Specification-First Repository Pattern
 
-**ALL EF Core queries MUST use Ardalis.Specification**.
+**Repository pattern MUST rely on Ardalis.Specification abstractions end-to-end.**
 
+- Application layer MUST depend on Ardalis.Specification abstractions
+  (`IReadRepositoryBase<T>`, `IRepositoryBase<T>`, or equivalent abstractions from the library).
+- Application layer MUST NOT define parallel custom repository contracts for standard
+  CRUD/query behavior already covered by Ardalis.Specification abstractions.
+- Infrastructure.Db MUST provide EF Core concrete implementations of those Ardalis
+  abstractions (e.g., via Ardalis.Specification.EntityFrameworkCore).
 - Query logic, includes, ordering, and pagination MUST be encapsulated in
   specification classes.
 - Direct ad-hoc `DbSet` querying outside specifications is prohibited.
-- Repositories MUST consume specifications for reads.
 
-**Rationale**: Specifications make query behavior reusable, composable, and
-testable.
+**Rationale**: Using one abstraction model avoids duplicate repository contracts,
+keeps query behavior composable, and cleanly separates Application orchestration
+from Infrastructure persistence implementation details.
 
 ### IV. Real Database Testing
 
@@ -138,7 +148,7 @@ Clear, domain-enforced error messages provide sufficient boundary feedback.
 
 **Mandatory Libraries**:
 
-- Data Access: Entity Framework Core, Ardalis.Specification
+- Data Access: Entity Framework Core, Ardalis.Specification, Ardalis.Specification.EntityFrameworkCore
 - Application Flow: WolverineFx, FluentValidation
 - Testing: xUnit, Shouldly, AutoBogus, TestContainers
 - Observability: OpenTelemetry
@@ -159,9 +169,12 @@ Clear, domain-enforced error messages provide sufficient boundary feedback.
 
 **Quality Gates**:
 
-- New requests MUST include FluentValidation validators in Application.
+- New requests MUST document boundary validation strategy in Application:
+  use FluentValidation when boundary validation is needed beyond domain-enforced invariants.
 - New domain entities MUST avoid public default constructors.
 - New aggregate behavior MUST be implemented as entity instance methods.
+- New repository usage in Application MUST use Ardalis.Specification abstractions,
+  and Infrastructure.Db MUST provide concrete EF implementations.
 
 ## Governance
 
@@ -187,4 +200,4 @@ Clear, domain-enforced error messages provide sufficient boundary feedback.
 - PR review MUST verify all applicable MUST statements.
 - Any justified violation MUST be documented in `plan.md` Complexity Tracking.
 
-**Version**: 3.0.0 | **Ratified**: 2026-02-28 | **Last Amended**: 2026-03-02
+**Version**: 3.1.0 | **Ratified**: 2026-02-28 | **Last Amended**: 2026-03-11

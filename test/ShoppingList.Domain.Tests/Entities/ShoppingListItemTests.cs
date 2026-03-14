@@ -254,4 +254,19 @@ public class ShoppingListItemTests
         // Act & Assert
         item.IsCompleted().ShouldBeFalse();
     }
+
+    [Fact]
+    public void Create_GeneratesUniqueIds_ForTenThousandItems()
+    {
+        HashSet<Guid> ids = [];
+
+        for (int i = 0; i < 10_000; i++)
+        {
+            global::ShoppingList.Domain.Entities.ShoppingListItem item =
+                global::ShoppingList.Domain.Entities.ShoppingListItem.Create($"item-{i}", 1);
+            ids.Add(item.Id);
+        }
+
+        ids.Count.ShouldBe(10_000);
+    }
 }

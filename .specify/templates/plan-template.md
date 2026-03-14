@@ -12,7 +12,7 @@
 ## Technical Context
 
 **Language/Version**: .NET 10 (SDK 10.0.100), C# 13  
-**Primary Dependencies**: ASP.NET Core, Entity Framework Core, Ardalis.Specification, WolverineFx, FluentValidation  
+**Primary Dependencies**: ASP.NET Core, Entity Framework Core, Ardalis.Specification, Ardalis.Specification.EntityFrameworkCore, WolverineFx, FluentValidation (when boundary validation is needed)  
 **Storage**: [Specify database: PostgreSQL, SQL Server, or NEEDS CLARIFICATION]  
 **Testing**: xUnit, Shouldly (assertions), AutoBogus (fake data), TestContainers (real DB tests)  
 **Target Platform**: ASP.NET Core REST API, .NET Aspire orchestration for local development  
@@ -29,10 +29,10 @@ Verify compliance with ShoppingList Constitution (`.specify/memory/constitution.
 
 - ✅ **I. Domain-Centric Clean Architecture**: Is business logic confined to Domain and dependency flow inward only?
 - ✅ **II. Test-First**: Are tests planned BEFORE implementation (Red-Green-Refactor)?
-- ✅ **III. Specification Pattern**: Are all queries using Ardalis.Specification?
+- ✅ **III. Specification Pattern**: Does Application use Ardalis.Specification abstractions while Infrastructure.Db provides EF concrete implementations?
 - ✅ **IV. Real Database Testing**: Are TestContainers planned for DB integration tests?
 - ✅ **V. Domain Entity Integrity**: Do entities avoid public default constructors and enforce behavior via instance methods?
-- ✅ **VI. CQRS Messaging & Validation**: Are handlers dispatched with WolverineFx? Are validations implemented with FluentValidation (or domain enforcement where equivalent and clear)?
+- ✅ **VI. CQRS Messaging & Validation**: Are handlers dispatched with WolverineFx? Is boundary validation strategy explicit (FluentValidation when needed, otherwise clear domain enforcement)?
 - ✅ **VII. Modern C# Style Rules**: Are primary constructors/expression-bodied members preferred and `var` avoided?
 
 If any violations are needed, document justification in Complexity Tracking section below.

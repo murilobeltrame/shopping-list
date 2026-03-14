@@ -22,30 +22,30 @@ This document breaks down the Shopping List domain implementation into executabl
 
 ### 1.1 Domain Layer Project Structure
 
-- [ ] T001 Create Domain layer folder structure in `src/ShoppingList.Domain/`
+- [X] T001 Create Domain layer folder structure in `src/ShoppingList.Domain/`
   - Create subdirectories: `Entities/`, `Exceptions/`, `Specifications/`
   - File: `src/ShoppingList.Domain/ShoppingList.Domain.csproj` (no new dependencies needed)
 
-- [ ] T002 Create custom domain exception class in `src/ShoppingList.Domain/Exceptions/`
+- [X] T002 Create custom domain exception class in `src/ShoppingList.Domain/Exceptions/`
   - Create: `src/ShoppingList.Domain/Exceptions/DomainException.cs` (base exception for domain violations)
   - Implements: `Exception` with message + optional inner exception
   - Usage: Thrown by ShoppingListItem when invariants violated (e.g., invalid quantity)
 
 ### 1.2 Application Layer Project Structure
 
-- [ ] T003 Create Application layer folder structure in `src/ShoppingList.Application/`
+- [X] T003 Create Application layer folder structure in `src/ShoppingList.Application/`
   - Create subdirectories: `Commands/`, `Handlers/`, `Repositories/`, `Services/`
   - File: `src/ShoppingList.Application/ShoppingList.Application.csproj`
   - Verify: ProjectReference to ShoppingList.Domain exists
 
 ### 1.3 Test Projects
 
-- [ ] T004 Verify Domain.Tests project structure in `test/ShoppingList.Domain.Tests/`
+- [X] T004 Verify Domain.Tests project structure in `test/ShoppingList.Domain.Tests/`
   - Folders: `Entities/`, `Helpers/`
   - Verify references: Shouldly, AutoBogus, xUnit
   - File: `test/ShoppingList.Domain.Tests/ShoppingList.Domain.Tests.csproj`
 
-- [ ] T005 Verify Application.Tests project structure in `test/ShoppingList.Application.Tests/`
+- [X] T005 Verify Application.Tests project structure in `test/ShoppingList.Application.Tests/`
   - Folders: `Handlers/`, `Mocks/`
   - Verify references: Shouldly, AutoBogus, xUnit, Moq (for mocking repositories)
   - File: `test/ShoppingList.Application.Tests/ShoppingList.Application.Tests.csproj`
@@ -56,7 +56,7 @@ This document breaks down the Shopping List domain implementation into executabl
 
 ### 2.1 ShoppingListItem Entity Implementation
 
-- [ ] T006 [P] ShoppingListItem unit tests (RED phase)
+- [X] T006 [P] ShoppingListItem unit tests (RED phase)
   - Create: `test/ShoppingList.Domain.Tests/Entities/ShoppingListItemTests.cs`
   - Tests to write (all should FAIL initially):
     - `Constructor_WithValidDescription_CreatesItem` — factory creates item
@@ -79,7 +79,7 @@ This document breaks down the Shopping List domain implementation into executabl
     - `IsCompleted_WhenNeither_ReturnsFalse` — not purchased and not removed = not completed
     - Reference: [data-model.md](data-model.md#shoppinglistitem-entity)
 
-- [ ] T007 [P] ShoppingListItem entity implementation (GREEN phase)
+- [X] T007 [P] ShoppingListItem entity implementation (GREEN phase)
   - Create: `src/ShoppingList.Domain/Entities/ShoppingListItem.cs`
   - Implement:
     - Public properties: `Guid Id`, `string Description`, `int? Quantity` (private setter), `bool Purchased` (private setter), `bool Removed` (private setter)
@@ -94,14 +94,14 @@ This document breaks down the Shopping List domain implementation into executabl
   - Style: Primary constructor or parameterized constructor; explicit types (no `var`)
   - Reference: [data-model.md](data-model.md#shoppinglistitem-entity)
 
-- [ ] T008 ShoppingListItem refactor & code review (REFACTOR phase)
+- [X] T008 ShoppingListItem refactor & code review (REFACTOR phase)
   - Review: Invariants enforced, no public mutation, clean code
   - Verify: All tests PASS
   - Optimize: Remove redundant validation, simplify methods
 
 ### 2.2 ShoppingList Aggregate Implementation
 
-- [ ] T009 [P] ShoppingList unit tests (RED phase)
+- [X] T009 [P] ShoppingList unit tests (RED phase)
   - Create: `test/ShoppingList.Domain.Tests/Entities/ShoppingListTests.cs`
   - Tests to write (all should FAIL initially):
     - `Create_WithValidOwner_CreatesList` — list created successfully
@@ -133,7 +133,7 @@ This document breaks down the Shopping List domain implementation into executabl
     - `Copy_OriginalListRemains_Unchanged` — original not modified
   - Reference: [data-model.md](data-model.md#aggregate-shoppinglist)
 
-- [ ] T010 [P] ShoppingList aggregate implementation (GREEN phase)
+- [X] T010 [P] ShoppingList aggregate implementation (GREEN phase)
   - Create: `src/ShoppingList.Domain/Entities/ShoppingList.cs`
   - Implement:
     - Public properties: `Guid Id`, `string Owner`, `DateTime? Date`, `IReadOnlyCollection<ShoppingListItem> Items`
@@ -153,7 +153,7 @@ This document breaks down the Shopping List domain implementation into executabl
   - Style: Primary constructor or parameterized constructor; explicit types (no `var`)
   - Reference: [data-model.md](data-model.md#aggregate-shoppinglist)
 
-- [ ] T011 ShoppingList refactor & code review (REFACTOR phase)
+- [X] T011 ShoppingList refactor & code review (REFACTOR phase)
   - Review: Invariants enforced, finished calculation correct, collection managed properly
   - Verify: All tests PASS
   - Optimize: Remove redundant code, simplify item lookup logic
@@ -164,7 +164,7 @@ This document breaks down the Shopping List domain implementation into executabl
 
 ### 3.1 Repository Interface & Commands
 
-- [ ] T012 Create repository interface in Application layer
+- [X] T012 Create repository interface in Application layer
   - Create: `src/ShoppingList.Application/Repositories/IShoppingListRepository.cs`
   - Interface methods:
     - `Task<ShoppingList?> GetByIdAsync(Guid id)`
@@ -172,7 +172,7 @@ This document breaks down the Shopping List domain implementation into executabl
     - `Task DeleteAsync(Guid id)` (optional, not used in MVP)
   - Namespace: `ShoppingList.Application.Repositories`
 
-- [ ] T013 Create command classes in Application layer
+- [X] T013 Create command classes in Application layer
   - Create: `src/ShoppingList.Application/Commands/CreateListCommand.cs`
     - Properties: `string Owner`, `DateTime? Date`
     - No validation here (delegate to domain)
@@ -189,7 +189,7 @@ This document breaks down the Shopping List domain implementation into executabl
 
 ### 3.2 Command Handlers (Parallelizable)
 
-- [ ] T014 [P] CreateListHandler tests (RED phase)
+- [X] T014 [P] CreateListHandler tests (RED phase)
   - Create: `test/ShoppingList.Application.Tests/Handlers/CreateListHandlerTests.cs`
   - Mock: `IShoppingListRepository`
   - Tests:
@@ -198,7 +198,7 @@ This document breaks down the Shopping List domain implementation into executabl
     - `Handle_WithDate_CreatesListWithDate` — date passed through
   - Reference: [plan.md](plan.md#application-layer-strategy)
 
-- [ ] T015 [P] CreateListHandler implementation (GREEN phase)
+- [X] T015 [P] CreateListHandler implementation (GREEN phase)
   - Create: `src/ShoppingList.Application/Handlers/CreateListHandler.cs`
   - Implements: `ICommandHandler<CreateListCommand, Guid>` (WolverineFx interface)
   - Method: `async Task<Guid> Handle(CreateListCommand command)`
@@ -207,7 +207,7 @@ This document breaks down the Shopping List domain implementation into executabl
     - Return: `list.Id`
   - Transactions: Handled by WolverineFx (marked with transactional attribute or explicit scope)
 
-- [ ] T016 [P] AddItemHandler tests (RED phase)
+- [X] T016 [P] AddItemHandler tests (RED phase)
   - Create: `test/ShoppingList.Application.Tests/Handlers/AddItemHandlerTests.cs`
   - Mock: `IShoppingListRepository`
   - Tests:
@@ -216,7 +216,7 @@ This document breaks down the Shopping List domain implementation into executabl
     - `Handle_WithListNotFound_ThrowsInvalidOperationException` — repository returns null
     - `Handle_UpdatesFinishedStatusCorrectly` — finished recalculated after add
 
-- [ ] T017 [P] AddItemHandler implementation (GREEN phase)
+- [X] T017 [P] AddItemHandler implementation (GREEN phase)
   - Create: `src/ShoppingList.Application/Handlers/AddItemHandler.cs`
   - Implements: `ICommandHandler<AddItemCommand, Guid>`
   - Method: `async Task<Guid> Handle(AddItemCommand command)`
@@ -226,7 +226,7 @@ This document breaks down the Shopping List domain implementation into executabl
     - Call: `await repository.SaveAsync(list)` — persist
     - Return: `item.Id` from AddItem return value
 
-- [ ] T018 [P] MarkItemPurchasedHandler tests (RED phase)
+- [X] T018 [P] MarkItemPurchasedHandler tests (RED phase)
   - Create: `test/ShoppingList.Application.Tests/Handlers/MarkItemPurchasedHandlerTests.cs`
   - Tests:
     - `Handle_WithValidCommand_MarksPurchased` — item marked, list saved
@@ -234,7 +234,7 @@ This document breaks down the Shopping List domain implementation into executabl
     - `Handle_RecalculatesFinished` — finished updated if all items completed
     - `Handle_WithListNotFound_ThrowsInvalidOperationException` — repository returns null
 
-- [ ] T019 [P] MarkItemPurchasedHandler implementation (GREEN phase)
+- [X] T019 [P] MarkItemPurchasedHandler implementation (GREEN phase)
   - Create: `src/ShoppingList.Application/Handlers/MarkItemPurchasedHandler.cs`
   - Implements: `ICommandHandler<MarkItemPurchasedCommand>`
   - Method: `async Task Handle(MarkItemPurchasedCommand command)`
@@ -242,7 +242,7 @@ This document breaks down the Shopping List domain implementation into executabl
     - Call: `list.MarkItemPurchased(command.ItemId)` — may throw InvalidOperationException
     - Call: `await repository.SaveAsync(list)`
 
-- [ ] T020 [P] RemoveItemHandler tests (RED phase)
+- [X] T020 [P] RemoveItemHandler tests (RED phase)
   - Create: `test/ShoppingList.Application.Tests/Handlers/RemoveItemHandlerTests.cs`
   - Tests:
     - `Handle_WithValidCommand_MarksRemoved` — item marked, list saved
@@ -250,7 +250,7 @@ This document breaks down the Shopping List domain implementation into executabl
     - `Handle_RecalculatesFinished` — finished updated if all items completed
     - `Handle_WithListNotFound_ThrowsInvalidOperationException` — repository returns null
 
-- [ ] T021 [P] RemoveItemHandler implementation (GREEN phase)
+- [X] T021 [P] RemoveItemHandler implementation (GREEN phase)
   - Create: `src/ShoppingList.Application/Handlers/RemoveItemHandler.cs`
   - Implements: `ICommandHandler<RemoveItemCommand>`
   - Method: `async Task Handle(RemoveItemCommand command)`
@@ -258,7 +258,7 @@ This document breaks down the Shopping List domain implementation into executabl
     - Call: `list.RemoveItem(command.ItemId)` — may throw InvalidOperationException
     - Call: `await repository.SaveAsync(list)`
 
-- [ ] T022 [P] UpdateItemQuantityHandler tests (RED phase)
+- [X] T022 [P] UpdateItemQuantityHandler tests (RED phase)
   - Create: `test/ShoppingList.Application.Tests/Handlers/UpdateItemQuantityHandlerTests.cs`
   - Tests:
     - `Handle_WithValidCommand_UpdatesQuantity` — quantity changed, list saved
@@ -266,7 +266,7 @@ This document breaks down the Shopping List domain implementation into executabl
     - `Handle_WithItemNotFound_PropagatesInvalidOperationException` — domain exception bubbles
     - `Handle_DoesNotAffectFinished` — finished status unchanged after quantity update
 
-- [ ] T023 [P] UpdateItemQuantityHandler implementation (GREEN phase)
+- [X] T023 [P] UpdateItemQuantityHandler implementation (GREEN phase)
   - Create: `src/ShoppingList.Application/Handlers/UpdateItemQuantityHandler.cs`
   - Implements: `ICommandHandler<UpdateItemQuantityCommand>`
   - Method: `async Task Handle(UpdateItemQuantityCommand command)`
@@ -274,7 +274,7 @@ This document breaks down the Shopping List domain implementation into executabl
     - Call: `list.UpdateItemQuantity(command.ItemId, command.NewQuantity)` — may throw exceptions
     - Call: `await repository.SaveAsync(list)`
 
-- [ ] T024 [P] CopyListHandler tests (RED phase)
+- [X] T024 [P] CopyListHandler tests (RED phase)
   - Create: `test/ShoppingList.Application.Tests/Handlers/CopyListHandlerTests.cs`
   - Tests:
     - `Handle_WithValidCommand_CopiesListAndReturnsNewId` — new list created, saved, ID returned
@@ -282,7 +282,7 @@ This document breaks down the Shopping List domain implementation into executabl
     - `Handle_SourceListNotFound_ThrowsInvalidOperationException` — repository returns null for source
     - `Handle_WithInvalidNewOwner_PropagatesArgumentException` — domain exception bubbles
 
-- [ ] T025 [P] CopyListHandler implementation (GREEN phase)
+- [X] T025 [P] CopyListHandler implementation (GREEN phase)
   - Create: `src/ShoppingList.Application/Handlers/CopyListHandler.cs`
   - Implements: `ICommandHandler<CopyListCommand, Guid>`
   - Method: `async Task<Guid> Handle(CopyListCommand command)`
@@ -295,7 +295,7 @@ This document breaks down the Shopping List domain implementation into executabl
 
 ## Phase 4: Integration & Polish
 
-- [ ] T026 Build & verify all layers compile
+- [X] T026 Build & verify all layers compile
   - Run: `dotnet build` from repo root
   - Verify: No compilation errors in Domain, Application, Domain.Tests, Application.Tests
   - Check: All test projects can be built
