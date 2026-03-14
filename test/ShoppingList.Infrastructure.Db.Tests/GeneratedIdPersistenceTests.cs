@@ -1,3 +1,4 @@
+using Ardalis.Specification;
 using Microsoft.EntityFrameworkCore;
 using Shouldly;
 using ShoppingList.Infrastructure.Db;
@@ -18,29 +19,44 @@ public class GeneratedIdPersistenceTests(PostgreSqlFixture fixture) : IClassFixt
 
         await using (ApplicationContext context = new(options))
         {
-            await context.Database.EnsureCreatedAsync();
+            Domain.Entities.ShoppingList list =
+                Domain.Entities.ShoppingList.Create("owner-1");
+            Domain.Entities.ShoppingListItem item = list.AddItem("Milk", 2);
 
-            global::ShoppingList.Domain.Entities.ShoppingList list =
-                global::ShoppingList.Domain.Entities.ShoppingList.Create("owner-1");
-            global::ShoppingList.Domain.Entities.ShoppingListItem item = list.AddItem("Milk", 2);
+            IRepositoryBase<Domain.Entities.ShoppingList> repository =
+                new ShoppingListTestRepository(context);
 
             listId = list.Id;
             itemId = item.Id;
 
-            context.ShoppingLists.Add(list);
-            await context.SaveChangesAsync();
+            _ = await repository.AddAsync(list);
         }
 
         await using (ApplicationContext context = new(options))
         {
-            global::ShoppingList.Domain.Entities.ShoppingList reloaded = await context.ShoppingLists
-                .Include(x => x.Items)
-                .SingleAsync(x => x.Id == listId);
+            IReadRepositoryBase<Domain.Entities.ShoppingList> repository =
+                new ShoppingListTestRepository(context);
+            ShoppingListByIdWithItemsSpec specification = new(listId);
 
-            global::ShoppingList.Domain.Entities.ShoppingListItem reloadedItem = reloaded.Items.Single();
+            Domain.Entities.ShoppingList? reloaded =
+                await repository.FirstOrDefaultAsync(specification);
+            reloaded.ShouldNotBeNull();
 
+            Domain.Entities.ShoppingListItem reloadedItem = reloaded.Items.Single();
             reloaded.Id.ShouldBe(listId);
             reloadedItem.Id.ShouldBe(itemId);
+        }
+    }
+
+    private sealed class ShoppingListByIdWithItemsSpec
+        : Specification<Domain.Entities.ShoppingList>,
+            ISingleResultSpecification<Domain.Entities.ShoppingList>
+    {
+        public ShoppingListByIdWithItemsSpec(Guid listId)
+        {
+            Query
+                .Where(x => x.Id == listId)
+                .Include(x => x.Items);
         }
     }
 }

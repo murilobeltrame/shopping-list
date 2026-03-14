@@ -1,13 +1,17 @@
 <!--
-Sync Impact Report - Version 3.1.0 (2026-03-11)
+Sync Impact Report - Version 3.2.0 (2026-03-14)
 ================================================================
-VERSION CHANGE: 3.0.0 → 3.1.0
-BUMP RATIONALE: MINOR - Principle III was materially expanded to require
-Ardalis.Specification abstractions as the repository contract in Application,
-with EF Core concrete implementation in Infrastructure.Db.
+VERSION CHANGE: 3.1.0 → 3.2.0
+BUMP RATIONALE: MINOR - Principle III materially expanded with two new MUST rules:
+(1) ApplicationContext MUST NOT expose public DbSet<T> properties;
+(2) Infrastructure MUST use open-generic EfRepository<T> as the canonical
+implementation; entity-specific repository subclasses are prohibited for
+standard CRUD/query scenarios. Principle VII expanded with explicit rule
+banning private backing fields for constructor-injected parameters.
 
 MODIFIED PRINCIPLES:
-  - III. Specification Pattern for Data Access → III. Specification-First Repository Pattern
+  - III. Specification-First Repository Pattern (expanded)
+  - VII. Modern C# Style Rules (expanded)
 
 ADDED SECTIONS:
   - None
@@ -16,15 +20,13 @@ REMOVED SECTIONS:
   - None
 
 TEMPLATES REQUIRING UPDATES:
-  ✅ .specify/templates/plan-template.md
-  ✅ .specify/templates/tasks-template.md
-  ✅ .github/copilot-instructions.md
+  ✅ .specify/templates/plan-template.md (Constitution Check item III updated)
   ✅ .specify/memory/constitution.md (quality gates aligned)
   ⚠ pending: .specify/templates/commands/*.md (directory does not exist in repository)
 
 FOLLOW-UP TODOs:
   - TODO(COMMAND_TEMPLATES): Add `.specify/templates/commands/` if command templates are introduced,
-    then align wording with Constitution v3.1.0.
+    then align wording with Constitution v3.2.0.
 ================================================================
 -->
 
@@ -74,15 +76,22 @@ implementation and prevents regressions.
   (`IReadRepositoryBase<T>`, `IRepositoryBase<T>`, or equivalent abstractions from the library).
 - Application layer MUST NOT define parallel custom repository contracts for standard
   CRUD/query behavior already covered by Ardalis.Specification abstractions.
-- Infrastructure.Db MUST provide EF Core concrete implementations of those Ardalis
-  abstractions (e.g., via Ardalis.Specification.EntityFrameworkCore).
+- Infrastructure.Db MUST provide EF Core concrete implementations via a single open-generic
+  repository (`EfRepository<T>`) registered for all `IRepositoryBase<T>` and
+  `IReadRepositoryBase<T>` DI bindings. Entity-specific repository subclasses are
+  prohibited unless the entity requires custom domain-driven query logic impossible to
+  express through Ardalis.Specification specifications alone.
+- `ApplicationContext` MUST NOT expose public `DbSet<T>` properties. All data access MUST
+  go exclusively through the Ardalis.Specification repository layer, which uses EF Core's
+  `Set<T>()` method internally.
 - Query logic, includes, ordering, and pagination MUST be encapsulated in
   specification classes.
 - Direct ad-hoc `DbSet` querying outside specifications is prohibited.
 
 **Rationale**: Using one abstraction model avoids duplicate repository contracts,
 keeps query behavior composable, and cleanly separates Application orchestration
-from Infrastructure persistence implementation details.
+from Infrastructure persistence implementation details. Hiding DbSet properties
+prevents bypassing the repository abstraction from other layers.
 
 ### IV. Real Database Testing
 
@@ -131,12 +140,15 @@ Clear, domain-enforced error messages provide sufficient boundary feedback.
 
 **C# code MUST follow project style constraints for readability and consistency.**
 
-- Prefer primary constructors where applicable.
+- Prefer primary constructors where applicable; constructor-injected parameters MUST be
+  used directly and MUST NOT be copied into private backing fields.
 - Prefer expression-bodied members for simple members/accessors.
 - `var` is prohibited; explicit types are required.
 - Use file-scoped namespaces and project naming conventions from `.editorconfig`.
 
 **Rationale**: Consistent style reduces cognitive load and review friction.
+Eliminating redundant backing fields keeps dependencies visible at the constructor
+signature and avoids unnecessary boilerplate.
 
 ## Technology Stack & Dependencies
 
@@ -174,7 +186,11 @@ Clear, domain-enforced error messages provide sufficient boundary feedback.
 - New domain entities MUST avoid public default constructors.
 - New aggregate behavior MUST be implemented as entity instance methods.
 - New repository usage in Application MUST use Ardalis.Specification abstractions,
-  and Infrastructure.Db MUST provide concrete EF implementations.
+  and Infrastructure.Db MUST provide concrete EF implementations via open-generic `EfRepository<T>`.
+- `ApplicationContext` MUST NOT expose public `DbSet<T>` properties; adding such properties is a
+  build-review violation.
+- Classes using primary constructors MUST NOT introduce private backing fields for
+  constructor-injected parameters.
 
 ## Governance
 
@@ -200,4 +216,4 @@ Clear, domain-enforced error messages provide sufficient boundary feedback.
 - PR review MUST verify all applicable MUST statements.
 - Any justified violation MUST be documented in `plan.md` Complexity Tracking.
 
-**Version**: 3.1.0 | **Ratified**: 2026-02-28 | **Last Amended**: 2026-03-11
+**Version**: 3.2.0 | **Ratified**: 2026-02-28 | **Last Amended**: 2026-03-14

@@ -3,14 +3,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ShoppingList.Infrastructure.Db.Configurations;
 
-public sealed class ShoppingListItemConfiguration : IEntityTypeConfiguration<global::ShoppingList.Domain.Entities.ShoppingListItem>
+public sealed class ShoppingListItemConfiguration : IEntityTypeConfiguration<Domain.Entities.ShoppingListItem>
 {
-    public void Configure(EntityTypeBuilder<global::ShoppingList.Domain.Entities.ShoppingListItem> builder)
+    public void Configure(EntityTypeBuilder<Domain.Entities.ShoppingListItem> builder)
     {
         builder.ToTable("ShoppingListItems");
 
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id).ValueGeneratedNever();
 
         builder.Property(x => x.Description)
             .IsRequired()

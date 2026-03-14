@@ -31,7 +31,7 @@ public class ShoppingList
     /// <summary>
     /// Computed property: list is finished if all items are purchased/removed (or list is empty = false).
     /// </summary>
-    public bool Finished => _items.Count == 0 ? false : _items.All(i => i.IsCompleted());
+    public bool Finished => _items.Count != 0 && _items.All(i => i.IsCompleted());
 
     /// <summary>
     /// Private constructor for factory and EF Core hydration.
@@ -50,15 +50,9 @@ public class ShoppingList
     /// <param name="date">Optional date</param>
     /// <returns>New ShoppingList instance with empty items collection</returns>
     /// <throws>ArgumentException if owner is null, empty, or whitespace</throws>
-    public static ShoppingList Create(string owner, DateTime? date = null)
-    {
-        if (string.IsNullOrWhiteSpace(owner))
-        {
-            throw new ArgumentException("Owner cannot be null or empty.");
-        }
-
-        return new ShoppingList(Guid.NewGuid(), owner, date);
-    }
+    public static ShoppingList Create(string owner, DateTime? date = null) => string.IsNullOrWhiteSpace(owner)
+            ? throw new ArgumentException("Owner cannot be null or empty.")
+            : new ShoppingList(Guid.NewGuid(), owner, date);
 
     /// <summary>
     /// Add item to the list with validation delegated to ShoppingListItem.Create.
@@ -142,11 +136,6 @@ public class ShoppingList
     private ShoppingListItem FindItem(Guid itemId)
     {
         var item = _items.FirstOrDefault(i => i.Id == itemId);
-        if (item is null)
-        {
-            throw new InvalidOperationException($"Item with ID {itemId} not found in list.");
-        }
-
-        return item;
+        return item is null ? throw new InvalidOperationException($"Item with ID {itemId} not found in list.") : item;
     }
 }

@@ -11,9 +11,9 @@ public class UpdateItemQuantityHandlerTests
     [Fact]
     public async Task Handle_WithValidCommand_UpdatesQuantity()
     {
-        IRepositoryBase<global::ShoppingList.Domain.Entities.ShoppingList> repository = Substitute.For<IRepositoryBase<global::ShoppingList.Domain.Entities.ShoppingList>>();
-        global::ShoppingList.Domain.Entities.ShoppingList shoppingList = global::ShoppingList.Domain.Entities.ShoppingList.Create("owner-1");
-        global::ShoppingList.Domain.Entities.ShoppingListItem item = shoppingList.AddItem("Milk", 1);
+        IRepositoryBase<Domain.Entities.ShoppingList> repository = Substitute.For<IRepositoryBase<Domain.Entities.ShoppingList>>();
+        Domain.Entities.ShoppingList shoppingList = Domain.Entities.ShoppingList.Create("owner-1");
+        Domain.Entities.ShoppingListItem item = shoppingList.AddItem("Milk", 1);
         repository.GetByIdAsync(shoppingList.Id).Returns(shoppingList);
 
         UpdateItemQuantityHandler handler = new(repository);
@@ -28,37 +28,37 @@ public class UpdateItemQuantityHandlerTests
     [Fact]
     public async Task Handle_WithInvalidQuantity_PropagatesArgumentException()
     {
-        IRepositoryBase<global::ShoppingList.Domain.Entities.ShoppingList> repository = Substitute.For<IRepositoryBase<global::ShoppingList.Domain.Entities.ShoppingList>>();
-        global::ShoppingList.Domain.Entities.ShoppingList shoppingList = global::ShoppingList.Domain.Entities.ShoppingList.Create("owner-1");
-        global::ShoppingList.Domain.Entities.ShoppingListItem item = shoppingList.AddItem("Milk", 1);
+        IRepositoryBase<Domain.Entities.ShoppingList> repository = Substitute.For<IRepositoryBase<Domain.Entities.ShoppingList>>();
+        Domain.Entities.ShoppingList shoppingList = Domain.Entities.ShoppingList.Create("owner-1");
+        Domain.Entities.ShoppingListItem item = shoppingList.AddItem("Milk", 1);
         repository.GetByIdAsync(shoppingList.Id).Returns(shoppingList);
 
         UpdateItemQuantityHandler handler = new(repository);
         UpdateItemQuantityCommand command = new(shoppingList.Id, item.Id, 0);
 
         await Should.ThrowAsync<ArgumentException>(async () => await handler.Handle(command));
-        await repository.DidNotReceive().UpdateAsync(Arg.Any<global::ShoppingList.Domain.Entities.ShoppingList>());
+        await repository.DidNotReceive().UpdateAsync(Arg.Any<Domain.Entities.ShoppingList>());
     }
 
     [Fact]
     public async Task Handle_WithItemNotFound_PropagatesInvalidOperationException()
     {
-        IRepositoryBase<global::ShoppingList.Domain.Entities.ShoppingList> repository = Substitute.For<IRepositoryBase<global::ShoppingList.Domain.Entities.ShoppingList>>();
-        global::ShoppingList.Domain.Entities.ShoppingList shoppingList = global::ShoppingList.Domain.Entities.ShoppingList.Create("owner-1");
+        IRepositoryBase<Domain.Entities.ShoppingList> repository = Substitute.For<IRepositoryBase<Domain.Entities.ShoppingList>>();
+        Domain.Entities.ShoppingList shoppingList = Domain.Entities.ShoppingList.Create("owner-1");
         repository.GetByIdAsync(shoppingList.Id).Returns(shoppingList);
 
         UpdateItemQuantityHandler handler = new(repository);
 
         await Should.ThrowAsync<InvalidOperationException>(async () => await handler.Handle(new UpdateItemQuantityCommand(shoppingList.Id, Guid.NewGuid(), 2)));
-        await repository.DidNotReceive().UpdateAsync(Arg.Any<global::ShoppingList.Domain.Entities.ShoppingList>());
+        await repository.DidNotReceive().UpdateAsync(Arg.Any<Domain.Entities.ShoppingList>());
     }
 
     [Fact]
     public async Task Handle_DoesNotAffectFinished()
     {
-        IRepositoryBase<global::ShoppingList.Domain.Entities.ShoppingList> repository = Substitute.For<IRepositoryBase<global::ShoppingList.Domain.Entities.ShoppingList>>();
-        global::ShoppingList.Domain.Entities.ShoppingList shoppingList = global::ShoppingList.Domain.Entities.ShoppingList.Create("owner-1");
-        global::ShoppingList.Domain.Entities.ShoppingListItem item = shoppingList.AddItem("Milk", 1);
+        IRepositoryBase<Domain.Entities.ShoppingList> repository = Substitute.For<IRepositoryBase<Domain.Entities.ShoppingList>>();
+        Domain.Entities.ShoppingList shoppingList = Domain.Entities.ShoppingList.Create("owner-1");
+        Domain.Entities.ShoppingListItem item = shoppingList.AddItem("Milk", 1);
         shoppingList.MarkItemPurchased(item.Id);
         bool finishedBefore = shoppingList.Finished;
         repository.GetByIdAsync(shoppingList.Id).Returns(shoppingList);

@@ -12,7 +12,7 @@ public class ShoppingListTests
     public void Create_WithValidOwner_CreatesList()
     {
         // Arrange & Act
-        var list = global::ShoppingList.Domain.Entities.ShoppingList.Create("user@example.com");
+        var list = Domain.Entities.ShoppingList.Create("user@example.com");
 
         // Assert
         list.Owner.ShouldBe("user@example.com");
@@ -27,7 +27,7 @@ public class ShoppingListTests
     public void Create_WithEmptyOwner_ThrowsArgumentException()
     {
         // Act & Assert
-        Should.Throw<ArgumentException>(() => global::ShoppingList.Domain.Entities.ShoppingList.Create(""));
+        Should.Throw<ArgumentException>(() => Domain.Entities.ShoppingList.Create(""));
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ public class ShoppingListTests
     public void Create_WithNullOwner_ThrowsArgumentException()
     {
         // Act & Assert
-        Should.Throw<ArgumentException>(() => global::ShoppingList.Domain.Entities.ShoppingList.Create(null!));
+        Should.Throw<ArgumentException>(() => Domain.Entities.ShoppingList.Create(null!));
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ public class ShoppingListTests
     public void Create_WithWhitespaceOwner_ThrowsArgumentException()
     {
         // Act & Assert
-        Should.Throw<ArgumentException>(() => global::ShoppingList.Domain.Entities.ShoppingList.Create("   "));
+        Should.Throw<ArgumentException>(() => Domain.Entities.ShoppingList.Create("   "));
     }
 
     /// <summary>
@@ -60,7 +60,7 @@ public class ShoppingListTests
         var date = new DateTime(2026, 3, 1);
 
         // Act
-        var list = global::ShoppingList.Domain.Entities.ShoppingList.Create("user@example.com", date);
+        var list = Domain.Entities.ShoppingList.Create("user@example.com", date);
 
         // Assert
         list.Date.ShouldBe(date);
@@ -73,7 +73,7 @@ public class ShoppingListTests
     public void Create_InitializesWithEmptyItems_AndFinishedFalse()
     {
         // Arrange & Act
-        var list = global::ShoppingList.Domain.Entities.ShoppingList.Create("user@example.com");
+        var list = Domain.Entities.ShoppingList.Create("user@example.com");
 
         // Assert
         list.Items.Count.ShouldBe(0);
@@ -87,7 +87,7 @@ public class ShoppingListTests
     public void AddItem_WithValidDescription_AddsItemToList()
     {
         // Arrange
-        var list = global::ShoppingList.Domain.Entities.ShoppingList.Create("user@example.com");
+        var list = Domain.Entities.ShoppingList.Create("user@example.com");
 
         // Act
         var item = list.AddItem("Milk");
@@ -104,7 +104,7 @@ public class ShoppingListTests
     public void AddItem_DelegatesValidationToShoppingListItem()
     {
         // Arrange
-        var list = global::ShoppingList.Domain.Entities.ShoppingList.Create("user@example.com");
+        var list = Domain.Entities.ShoppingList.Create("user@example.com");
 
         // Act & Assert
         Should.Throw<ArgumentException>(() => list.AddItem(""));
@@ -117,7 +117,7 @@ public class ShoppingListTests
     public void AddItem_InvalidQuantity_ThrowsArgumentException()
     {
         // Arrange
-        var list = global::ShoppingList.Domain.Entities.ShoppingList.Create("user@example.com");
+        var list = Domain.Entities.ShoppingList.Create("user@example.com");
 
         // Act & Assert
         Should.Throw<ArgumentException>(() => list.AddItem("Milk", 0));
@@ -130,7 +130,7 @@ public class ShoppingListTests
     public void Finished_WithEmptyList_ReturnsFalse()
     {
         // Arrange & Act
-        var list = global::ShoppingList.Domain.Entities.ShoppingList.Create("user@example.com");
+        var list = Domain.Entities.ShoppingList.Create("user@example.com");
 
         // Assert
         list.Finished.ShouldBeFalse();
@@ -143,7 +143,7 @@ public class ShoppingListTests
     public void Finished_WithOnePurchasedItem_ReturnsTrue()
     {
         // Arrange
-        var list = global::ShoppingList.Domain.Entities.ShoppingList.Create("user@example.com");
+        var list = Domain.Entities.ShoppingList.Create("user@example.com");
         var item = list.AddItem("Milk");
         item.MarkPurchased();
 
@@ -158,7 +158,7 @@ public class ShoppingListTests
     public void Finished_WithOneRemovedItem_ReturnsTrue()
     {
         // Arrange
-        var list = global::ShoppingList.Domain.Entities.ShoppingList.Create("user@example.com");
+        var list = Domain.Entities.ShoppingList.Create("user@example.com");
         var item = list.AddItem("Milk");
         item.MarkRemoved();
 
@@ -173,7 +173,7 @@ public class ShoppingListTests
     public void Finished_WithMixedStates_ReturnsFalse()
     {
         // Arrange
-        var list = global::ShoppingList.Domain.Entities.ShoppingList.Create("user@example.com");
+        var list = Domain.Entities.ShoppingList.Create("user@example.com");
         var item1 = list.AddItem("Milk");
         var item2 = list.AddItem("Bread");
         item1.MarkPurchased();
@@ -190,7 +190,7 @@ public class ShoppingListTests
     public void Finished_WithAllItemsCompleted_ReturnsTrue()
     {
         // Arrange
-        var list = global::ShoppingList.Domain.Entities.ShoppingList.Create("user@example.com");
+        var list = Domain.Entities.ShoppingList.Create("user@example.com");
         var item1 = list.AddItem("Milk");
         var item2 = list.AddItem("Bread");
         item1.MarkPurchased();
@@ -207,7 +207,7 @@ public class ShoppingListTests
     public void RemoveItem_WithValidItemId_MarksItemRemoved()
     {
         // Arrange
-        var list = global::ShoppingList.Domain.Entities.ShoppingList.Create("user@example.com");
+        var list = Domain.Entities.ShoppingList.Create("user@example.com");
         var item = list.AddItem("Milk");
 
         // Act
@@ -224,7 +224,7 @@ public class ShoppingListTests
     public void RemoveItem_WithInvalidItemId_ThrowsInvalidOperationException()
     {
         // Arrange
-        var list = global::ShoppingList.Domain.Entities.ShoppingList.Create("user@example.com");
+        var list = Domain.Entities.ShoppingList.Create("user@example.com");
 
         // Act & Assert
         Should.Throw<InvalidOperationException>(() => list.RemoveItem(Guid.NewGuid()));
@@ -237,7 +237,7 @@ public class ShoppingListTests
     public void RemoveItem_RecalculatesFinished_ToTrueIfAllCompleted()
     {
         // Arrange
-        var list = global::ShoppingList.Domain.Entities.ShoppingList.Create("user@example.com");
+        var list = Domain.Entities.ShoppingList.Create("user@example.com");
         var item = list.AddItem("Milk");
 
         // Act
@@ -254,7 +254,7 @@ public class ShoppingListTests
     public void MarkItemPurchased_WithValidItemId_MarksPurchased()
     {
         // Arrange
-        var list = global::ShoppingList.Domain.Entities.ShoppingList.Create("user@example.com");
+        var list = Domain.Entities.ShoppingList.Create("user@example.com");
         var item = list.AddItem("Milk");
 
         // Act
@@ -271,7 +271,7 @@ public class ShoppingListTests
     public void MarkItemPurchased_WithInvalidItemId_ThrowsInvalidOperationException()
     {
         // Arrange
-        var list = global::ShoppingList.Domain.Entities.ShoppingList.Create("user@example.com");
+        var list = Domain.Entities.ShoppingList.Create("user@example.com");
 
         // Act & Assert
         Should.Throw<InvalidOperationException>(() => list.MarkItemPurchased(Guid.NewGuid()));
@@ -284,7 +284,7 @@ public class ShoppingListTests
     public void MarkItemPurchased_RecalculatesFinished_ToTrueIfAllCompleted()
     {
         // Arrange
-        var list = global::ShoppingList.Domain.Entities.ShoppingList.Create("user@example.com");
+        var list = Domain.Entities.ShoppingList.Create("user@example.com");
         var item = list.AddItem("Milk");
 
         // Act
@@ -301,7 +301,7 @@ public class ShoppingListTests
     public void UpdateItemQuantity_WithValidItemId_UpdatesQuantity()
     {
         // Arrange
-        var list = global::ShoppingList.Domain.Entities.ShoppingList.Create("user@example.com");
+        var list = Domain.Entities.ShoppingList.Create("user@example.com");
         var item = list.AddItem("Milk", 2);
 
         // Act
@@ -318,7 +318,7 @@ public class ShoppingListTests
     public void UpdateItemQuantity_WithInvalidItemId_ThrowsInvalidOperationException()
     {
         // Arrange
-        var list = global::ShoppingList.Domain.Entities.ShoppingList.Create("user@example.com");
+        var list = Domain.Entities.ShoppingList.Create("user@example.com");
 
         // Act & Assert
         Should.Throw<InvalidOperationException>(() => list.UpdateItemQuantity(Guid.NewGuid(), 5));
@@ -331,7 +331,7 @@ public class ShoppingListTests
     public void UpdateItemQuantity_DoesNotAffectFinished_Status()
     {
         // Arrange
-        var list = global::ShoppingList.Domain.Entities.ShoppingList.Create("user@example.com");
+        var list = Domain.Entities.ShoppingList.Create("user@example.com");
         var item = list.AddItem("Milk", 2);
 
         // Act
@@ -348,7 +348,7 @@ public class ShoppingListTests
     public void Copy_WithValidOwner_CreatesNewListWithCopiedItems()
     {
         // Arrange
-        var list = global::ShoppingList.Domain.Entities.ShoppingList.Create("user1@example.com");
+        var list = Domain.Entities.ShoppingList.Create("user1@example.com");
         var item = list.AddItem("Milk", 2);
         item.MarkPurchased();
 
@@ -367,7 +367,7 @@ public class ShoppingListTests
     public void Copy_CopiedItems_ResetToNotPurchasedAndNotRemoved()
     {
         // Arrange
-        var list = global::ShoppingList.Domain.Entities.ShoppingList.Create("user1@example.com");
+        var list = Domain.Entities.ShoppingList.Create("user1@example.com");
         var item = list.AddItem("Milk", 2);
         item.MarkPurchased();
         item.MarkRemoved();
@@ -388,7 +388,7 @@ public class ShoppingListTests
     public void Copy_OriginalListRemains_Unchanged()
     {
         // Arrange
-        var list = global::ShoppingList.Domain.Entities.ShoppingList.Create("user1@example.com");
+        var list = Domain.Entities.ShoppingList.Create("user1@example.com");
         var item = list.AddItem("Milk");
 
         // Act
@@ -407,7 +407,7 @@ public class ShoppingListTests
     public void Copy_WithInvalidNewOwner_PropagatesArgumentException()
     {
         // Arrange
-        var list = global::ShoppingList.Domain.Entities.ShoppingList.Create("user@example.com");
+        var list = Domain.Entities.ShoppingList.Create("user@example.com");
 
         // Act & Assert
         Should.Throw<ArgumentException>(() => list.Copy(""));
@@ -420,8 +420,8 @@ public class ShoppingListTests
 
         for (int i = 0; i < 10_000; i++)
         {
-            global::ShoppingList.Domain.Entities.ShoppingList list =
-                global::ShoppingList.Domain.Entities.ShoppingList.Create($"owner-{i}");
+            Domain.Entities.ShoppingList list =
+                Domain.Entities.ShoppingList.Create($"owner-{i}");
             ids.Add(list.Id);
         }
 

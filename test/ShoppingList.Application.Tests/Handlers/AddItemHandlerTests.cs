@@ -11,8 +11,8 @@ public class AddItemHandlerTests
     [Fact]
     public async Task Handle_WithValidCommand_AddsItemAndReturnsItemId()
     {
-        IRepositoryBase<global::ShoppingList.Domain.Entities.ShoppingList> repository = Substitute.For<IRepositoryBase<global::ShoppingList.Domain.Entities.ShoppingList>>();
-        global::ShoppingList.Domain.Entities.ShoppingList shoppingList = global::ShoppingList.Domain.Entities.ShoppingList.Create("owner-1");
+        IRepositoryBase<Domain.Entities.ShoppingList> repository = Substitute.For<IRepositoryBase<Domain.Entities.ShoppingList>>();
+        Domain.Entities.ShoppingList shoppingList = Domain.Entities.ShoppingList.Create("owner-1");
         repository.GetByIdAsync(shoppingList.Id).Returns(shoppingList);
         AddItemHandler handler = new(repository);
         AddItemCommand command = new(shoppingList.Id, "Milk", 2);
@@ -27,22 +27,22 @@ public class AddItemHandlerTests
     [Fact]
     public async Task Handle_WithInvalidDescription_PropagatesArgumentException()
     {
-        IRepositoryBase<global::ShoppingList.Domain.Entities.ShoppingList> repository = Substitute.For<IRepositoryBase<global::ShoppingList.Domain.Entities.ShoppingList>>();
-        global::ShoppingList.Domain.Entities.ShoppingList shoppingList = global::ShoppingList.Domain.Entities.ShoppingList.Create("owner-1");
+        IRepositoryBase<Domain.Entities.ShoppingList> repository = Substitute.For<IRepositoryBase<Domain.Entities.ShoppingList>>();
+        Domain.Entities.ShoppingList shoppingList = Domain.Entities.ShoppingList.Create("owner-1");
         repository.GetByIdAsync(shoppingList.Id).Returns(shoppingList);
         AddItemHandler handler = new(repository);
         AddItemCommand command = new(shoppingList.Id, "", 2);
 
         await Should.ThrowAsync<ArgumentException>(async () => await handler.Handle(command));
-        await repository.DidNotReceive().UpdateAsync(Arg.Any<global::ShoppingList.Domain.Entities.ShoppingList>());
+        await repository.DidNotReceive().UpdateAsync(Arg.Any<Domain.Entities.ShoppingList>());
     }
 
     [Fact]
     public async Task Handle_WithListNotFound_ThrowsInvalidOperationException()
     {
-        IRepositoryBase<global::ShoppingList.Domain.Entities.ShoppingList> repository = Substitute.For<IRepositoryBase<global::ShoppingList.Domain.Entities.ShoppingList>>();
+        IRepositoryBase<Domain.Entities.ShoppingList> repository = Substitute.For<IRepositoryBase<Domain.Entities.ShoppingList>>();
         Guid listId = Guid.NewGuid();
-        repository.GetByIdAsync(listId).Returns((global::ShoppingList.Domain.Entities.ShoppingList?)null);
+        repository.GetByIdAsync(listId).Returns((Domain.Entities.ShoppingList?)null);
         AddItemHandler handler = new(repository);
         AddItemCommand command = new(listId, "Milk", 1);
 
@@ -52,9 +52,9 @@ public class AddItemHandlerTests
     [Fact]
     public async Task Handle_UpdatesFinishedStatusCorrectly()
     {
-        IRepositoryBase<global::ShoppingList.Domain.Entities.ShoppingList> repository = Substitute.For<IRepositoryBase<global::ShoppingList.Domain.Entities.ShoppingList>>();
-        global::ShoppingList.Domain.Entities.ShoppingList shoppingList = global::ShoppingList.Domain.Entities.ShoppingList.Create("owner-1");
-        global::ShoppingList.Domain.Entities.ShoppingListItem initialItem = shoppingList.AddItem("Bread");
+        IRepositoryBase<Domain.Entities.ShoppingList> repository = Substitute.For<IRepositoryBase<Domain.Entities.ShoppingList>>();
+        Domain.Entities.ShoppingList shoppingList = Domain.Entities.ShoppingList.Create("owner-1");
+        Domain.Entities.ShoppingListItem initialItem = shoppingList.AddItem("Bread");
         shoppingList.MarkItemPurchased(initialItem.Id);
         shoppingList.Finished.ShouldBeTrue();
 

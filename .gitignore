@@ -485,3 +485,6 @@ $RECYCLE.BIN/
 
 # Ignoring Coverage reports
 coveragereport/
+
+# Ignore Wolverine generated files
+**/Internal/Generated/*

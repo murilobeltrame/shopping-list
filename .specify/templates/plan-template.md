@@ -29,11 +29,11 @@ Verify compliance with ShoppingList Constitution (`.specify/memory/constitution.
 
 - ✅ **I. Domain-Centric Clean Architecture**: Is business logic confined to Domain and dependency flow inward only?
 - ✅ **II. Test-First**: Are tests planned BEFORE implementation (Red-Green-Refactor)?
-- ✅ **III. Specification Pattern**: Does Application use Ardalis.Specification abstractions while Infrastructure.Db provides EF concrete implementations?
+- ✅ **III. Specification Pattern**: Does Application use Ardalis.Specification abstractions (`IRepositoryBase<T>` / `IReadRepositoryBase<T>`) while Infrastructure.Db provides EF concrete implementations via open-generic `EfRepository<T>`? Does `ApplicationContext` avoid exposing public `DbSet<T>` properties?
 - ✅ **IV. Real Database Testing**: Are TestContainers planned for DB integration tests?
 - ✅ **V. Domain Entity Integrity**: Do entities avoid public default constructors and enforce behavior via instance methods?
 - ✅ **VI. CQRS Messaging & Validation**: Are handlers dispatched with WolverineFx? Is boundary validation strategy explicit (FluentValidation when needed, otherwise clear domain enforcement)?
-- ✅ **VII. Modern C# Style Rules**: Are primary constructors/expression-bodied members preferred and `var` avoided?
+- ✅ **VII. Modern C# Style Rules**: Are primary constructors/expression-bodied members preferred, `var` avoided, and constructor-injected parameters used directly (no private backing fields)?
 
 If any violations are needed, document justification in Complexity Tracking section below.
 

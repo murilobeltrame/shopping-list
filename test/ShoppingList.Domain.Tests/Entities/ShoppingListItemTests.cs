@@ -12,7 +12,7 @@ public class ShoppingListItemTests
     public void Create_WithValidDescription_CreatesItem()
     {
         // Arrange & Act
-        var item = global::ShoppingList.Domain.Entities.ShoppingListItem.Create("Milk");
+        var item = Domain.Entities.ShoppingListItem.Create("Milk");
 
         // Assert
         item.Description.ShouldBe("Milk");
@@ -29,7 +29,7 @@ public class ShoppingListItemTests
     {
         // Act & Assert
         Should.Throw<ArgumentException>(() => 
-            global::ShoppingList.Domain.Entities.ShoppingListItem.Create(""));
+            Domain.Entities.ShoppingListItem.Create(""));
     }
 
     /// <summary>
@@ -40,7 +40,7 @@ public class ShoppingListItemTests
     {
         // Act & Assert
         Should.Throw<ArgumentException>(() => 
-            global::ShoppingList.Domain.Entities.ShoppingListItem.Create("   "));
+            Domain.Entities.ShoppingListItem.Create("   "));
     }
 
     /// <summary>
@@ -54,7 +54,7 @@ public class ShoppingListItemTests
 
         // Act & Assert
         Should.Throw<ArgumentException>(() => 
-            global::ShoppingList.Domain.Entities.ShoppingListItem.Create(longDescription));
+            Domain.Entities.ShoppingListItem.Create(longDescription));
     }
 
     /// <summary>
@@ -64,7 +64,7 @@ public class ShoppingListItemTests
     public void Create_WithValidQuantity_CreatesItem()
     {
         // Arrange & Act
-        var item = global::ShoppingList.Domain.Entities.ShoppingListItem.Create("Apples", 5);
+        var item = Domain.Entities.ShoppingListItem.Create("Apples", 5);
 
         // Assert
         item.Quantity.ShouldBe(5);
@@ -78,7 +78,7 @@ public class ShoppingListItemTests
     {
         // Act & Assert
         Should.Throw<ArgumentException>(() => 
-            global::ShoppingList.Domain.Entities.ShoppingListItem.Create("Milk", 0));
+            Domain.Entities.ShoppingListItem.Create("Milk", 0));
     }
 
     /// <summary>
@@ -89,7 +89,7 @@ public class ShoppingListItemTests
     {
         // Act & Assert
         Should.Throw<ArgumentException>(() => 
-            global::ShoppingList.Domain.Entities.ShoppingListItem.Create("Milk", -1));
+            Domain.Entities.ShoppingListItem.Create("Milk", -1));
     }
 
     /// <summary>
@@ -99,7 +99,7 @@ public class ShoppingListItemTests
     public void Create_WithNullQuantity_CreatesItemSuccessfully()
     {
         // Arrange & Act
-        var item = global::ShoppingList.Domain.Entities.ShoppingListItem.Create("Cereal", null);
+        var item = Domain.Entities.ShoppingListItem.Create("Cereal", null);
 
         // Assert
         item.Quantity.ShouldBeNull();
@@ -112,7 +112,7 @@ public class ShoppingListItemTests
     public void MarkPurchased_SetsFlag_ToTrue()
     {
         // Arrange
-        var item = global::ShoppingList.Domain.Entities.ShoppingListItem.Create("Milk");
+        var item = Domain.Entities.ShoppingListItem.Create("Milk");
 
         // Act
         item.MarkPurchased();
@@ -128,7 +128,7 @@ public class ShoppingListItemTests
     public void MarkRemoved_SetsFlag_ToTrue()
     {
         // Arrange
-        var item = global::ShoppingList.Domain.Entities.ShoppingListItem.Create("Milk");
+        var item = Domain.Entities.ShoppingListItem.Create("Milk");
 
         // Act
         item.MarkRemoved();
@@ -144,7 +144,7 @@ public class ShoppingListItemTests
     public void MarkPurchased_DoesNotAffect_RemovedFlag()
     {
         // Arrange
-        var item = global::ShoppingList.Domain.Entities.ShoppingListItem.Create("Milk");
+        var item = Domain.Entities.ShoppingListItem.Create("Milk");
 
         // Act
         item.MarkPurchased();
@@ -160,7 +160,7 @@ public class ShoppingListItemTests
     public void MarkRemoved_DoesNotAffect_PurchasedFlag()
     {
         // Arrange
-        var item = global::ShoppingList.Domain.Entities.ShoppingListItem.Create("Milk");
+        var item = Domain.Entities.ShoppingListItem.Create("Milk");
 
         // Act
         item.MarkRemoved();
@@ -176,7 +176,7 @@ public class ShoppingListItemTests
     public void UpdateQuantity_WithValidValue_Updates()
     {
         // Arrange
-        var item = global::ShoppingList.Domain.Entities.ShoppingListItem.Create("Milk", 2);
+        var item = Domain.Entities.ShoppingListItem.Create("Milk", 2);
 
         // Act
         item.UpdateQuantity(3);
@@ -192,7 +192,7 @@ public class ShoppingListItemTests
     public void UpdateQuantity_WithZero_ThrowsArgumentException()
     {
         // Arrange
-        var item = global::ShoppingList.Domain.Entities.ShoppingListItem.Create("Milk", 2);
+        var item = Domain.Entities.ShoppingListItem.Create("Milk", 2);
 
         // Act & Assert
         Should.Throw<ArgumentException>(() => item.UpdateQuantity(0));
@@ -205,7 +205,7 @@ public class ShoppingListItemTests
     public void UpdateQuantity_WithNull_UpdatesToNull()
     {
         // Arrange
-        var item = global::ShoppingList.Domain.Entities.ShoppingListItem.Create("Milk", 2);
+        var item = Domain.Entities.ShoppingListItem.Create("Milk", 2);
 
         // Act
         item.UpdateQuantity(null);
@@ -221,7 +221,7 @@ public class ShoppingListItemTests
     public void IsCompleted_WhenPurchased_ReturnsTrue()
     {
         // Arrange
-        var item = global::ShoppingList.Domain.Entities.ShoppingListItem.Create("Milk");
+        var item = Domain.Entities.ShoppingListItem.Create("Milk");
         item.MarkPurchased();
 
         // Act & Assert
@@ -235,7 +235,7 @@ public class ShoppingListItemTests
     public void IsCompleted_WhenRemoved_ReturnsTrue()
     {
         // Arrange
-        var item = global::ShoppingList.Domain.Entities.ShoppingListItem.Create("Milk");
+        var item = Domain.Entities.ShoppingListItem.Create("Milk");
         item.MarkRemoved();
 
         // Act & Assert
@@ -249,7 +249,7 @@ public class ShoppingListItemTests
     public void IsCompleted_WhenNeither_ReturnsFalse()
     {
         // Arrange
-        var item = global::ShoppingList.Domain.Entities.ShoppingListItem.Create("Milk");
+        var item = Domain.Entities.ShoppingListItem.Create("Milk");
 
         // Act & Assert
         item.IsCompleted().ShouldBeFalse();
@@ -262,8 +262,8 @@ public class ShoppingListItemTests
 
         for (int i = 0; i < 10_000; i++)
         {
-            global::ShoppingList.Domain.Entities.ShoppingListItem item =
-                global::ShoppingList.Domain.Entities.ShoppingListItem.Create($"item-{i}", 1);
+            Domain.Entities.ShoppingListItem item =
+                Domain.Entities.ShoppingListItem.Create($"item-{i}", 1);
             ids.Add(item.Id);
         }
 

@@ -10,8 +10,8 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddShoppingListPersistence(this IServiceCollection services)
     {
-        services.AddScoped<IRepositoryBase<global::ShoppingList.Domain.Entities.ShoppingList>, ShoppingListRepository>();
-        services.AddScoped<IReadRepositoryBase<global::ShoppingList.Domain.Entities.ShoppingList>, ShoppingListRepository>();
+        services.AddScoped(typeof(IRepositoryBase<>), typeof(EfRepository<>));
+        services.AddScoped(typeof(IReadRepositoryBase<>), typeof(EfRepository<>));
         return services;
     }
 }
