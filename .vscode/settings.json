@@ -7,8 +7,12 @@
         "speckit.implement": true
     },
     "chat.tools.terminal.autoApprove": {
-        ".specify/scripts/bash/": true,
-        ".specify/scripts/powershell/": true,
+        "backend/.specify/scripts/bash/": true,
+        "backend/.specify/scripts/powershell/": true,
+        "ios/.specify/scripts/bash/": true,
+        "android/.specify/scripts/bash/": true,
+        "web/.specify/scripts/bash/": true,
+        "iac/.specify/scripts/bash/": true,
         "git fetch": true,
         "git ls-remote": true,
         "git rev-parse": true,
