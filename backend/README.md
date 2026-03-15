@@ -15,8 +15,23 @@ This folder contains the ShoppingList backend implementation and its local Spec-
 Run backend build and test commands from this folder:
 
 ```bash
+# Build the entire solution
 dotnet build ShoppingList.sln
+
+# Run all tests
 dotnet test ShoppingList.sln
+
+# Run tests for a specific project
+dotnet test test/ShoppingList.Domain.Tests
+dotnet test test/ShoppingList.Application.Tests
+dotnet test test/ShoppingList.Infrastructure.Db.Tests
+dotnet test test/ShoppingList.RestApi.Tests
+dotnet test test/ShoppingList.Architecture.Tests
+
+# Run a single test by name
+dotnet test ShoppingList.sln --filter "FullyQualifiedName~TestMethodName"
+
+# Run the app via Aspire
 dotnet run --project env/ShoppingList.AppHost
 ```
 
