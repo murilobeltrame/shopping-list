@@ -31,6 +31,16 @@ dotnet test test/ShoppingList.Architecture.Tests
 # Run a single test by name
 dotnet test ShoppingList.sln --filter "FullyQualifiedName~TestMethodName"
 
+# Generate EF Core migrations for SQL Server
+dotnet ef migrations add <MigrationName> \
+	--project src/ShoppingList.Infrastructure.Db \
+	--startup-project src/ShoppingList.RestApi
+
+# Apply migrations
+dotnet ef database update \
+	--project src/ShoppingList.Infrastructure.Db \
+	--startup-project src/ShoppingList.RestApi
+
 # Run the app via Aspire
 dotnet run --project env/ShoppingList.AppHost
 ```

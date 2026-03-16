@@ -10,9 +10,15 @@ public sealed class ShoppingListConfiguration : IEntityTypeConfiguration<Domain.
         builder.ToTable("ShoppingLists");
 
         builder.HasKey(x => x.Id);
-        
-        builder.Property(x => x.Owner).IsRequired();
-        builder.Property(x => x.Date).IsRequired(false);
+
+        builder.Property(x => x.Id).HasColumnType("uniqueidentifier");
+        builder.Property(x => x.Owner)
+            .IsRequired()
+            .HasMaxLength(256)
+            .HasColumnType("nvarchar(256)");
+        builder.Property(x => x.Date)
+            .IsRequired(false)
+            .HasColumnType("datetime2");
 
         builder.Ignore(x => x.Finished);
 

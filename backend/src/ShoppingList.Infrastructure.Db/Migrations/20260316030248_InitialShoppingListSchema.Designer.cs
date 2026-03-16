@@ -2,9 +2,9 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ShoppingList.Infrastructure.Db;
 
 #nullable disable
@@ -12,7 +12,7 @@ using ShoppingList.Infrastructure.Db;
 namespace ShoppingList.Infrastructure.Db.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20260312002750_InitialShoppingListSchema")]
+    [Migration("20260316030248_InitialShoppingListSchema")]
     partial class InitialShoppingListSchema
     {
         /// <inheritdoc />
@@ -21,21 +21,23 @@ namespace ShoppingList.Infrastructure.Db.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "10.0.3")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("ShoppingList.Domain.Entities.ShoppingList", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("Date")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Owner")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
@@ -45,24 +47,25 @@ namespace ShoppingList.Infrastructure.Db.Migrations
             modelBuilder.Entity("ShoppingList.Domain.Entities.ShoppingListItem", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<bool>("Purchased")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.Property<int?>("Quantity")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<bool>("Removed")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.Property<Guid>("ShoppingListId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 

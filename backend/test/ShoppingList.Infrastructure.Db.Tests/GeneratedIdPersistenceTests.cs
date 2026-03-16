@@ -5,9 +5,9 @@ using ShoppingList.Infrastructure.Db;
 
 namespace ShoppingList.Infrastructure.Db.Tests;
 
-public class GeneratedIdPersistenceTests(PostgreSqlFixture fixture) : IClassFixture<PostgreSqlFixture>
+public class GeneratedIdPersistenceTests(SqlServerFixture fixture) : IClassFixture<SqlServerFixture>
 {
-    private readonly PostgreSqlFixture _fixture = fixture;
+    private readonly SqlServerFixture _fixture = fixture;
 
     [Fact]
     public async Task PersistedListAndItemIds_AreStableAfterRoundTrip()
@@ -46,6 +46,36 @@ public class GeneratedIdPersistenceTests(PostgreSqlFixture fixture) : IClassFixt
             reloaded.Id.ShouldBe(listId);
             reloadedItem.Id.ShouldBe(itemId);
         }
+    }
+
+    [Fact]
+    public async Task SqlServerContainer_CanConnectWithFreshOptions()
+    {
+        DbContextOptions<ApplicationContext> options = await _fixture.CreateFreshOptionsAsync();
+
+        await using ApplicationContext context = new(options);
+        bool canConnect = await context.Database.CanConnectAsync();
+
+        canConnect.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task SchemaMigration_CreatesExpectedTablesOnSqlServer()
+    {
+        DbContextOptions<ApplicationContext> options = await _fixture.CreateMigrationOptionsAsync();
+
+        await using ApplicationContext context = new(options);
+        await context.Database.MigrateAsync();
+
+        int shoppingListsCount = await context.Database.SqlQueryRaw<int>(
+            "SELECT COUNT(*) AS Value FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'ShoppingLists'")
+            .SingleAsync();
+        int shoppingListItemsCount = await context.Database.SqlQueryRaw<int>(
+            "SELECT COUNT(*) AS Value FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'ShoppingListItems'")
+            .SingleAsync();
+
+        shoppingListsCount.ShouldBe(1);
+        shoppingListItemsCount.ShouldBe(1);
     }
 
     private sealed class ShoppingListByIdWithItemsSpec

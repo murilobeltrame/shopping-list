@@ -10,16 +10,18 @@ public sealed class ShoppingListItemConfiguration : IEntityTypeConfiguration<Dom
         builder.ToTable("ShoppingListItems");
 
         builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id).HasColumnType("uniqueidentifier");
 
         builder.Property(x => x.Description)
             .IsRequired()
-            .HasMaxLength(255);
+            .HasMaxLength(255)
+            .HasColumnType("nvarchar(255)");
 
-        builder.Property(x => x.Quantity).IsRequired(false);
-        builder.Property(x => x.Purchased).IsRequired();
-        builder.Property(x => x.Removed).IsRequired();
+        builder.Property(x => x.Quantity).IsRequired(false).HasColumnType("int");
+        builder.Property(x => x.Purchased).IsRequired().HasColumnType("bit");
+        builder.Property(x => x.Removed).IsRequired().HasColumnType("bit");
 
-        builder.Property<Guid>("ShoppingListId").IsRequired();
+        builder.Property<Guid>("ShoppingListId").IsRequired().HasColumnType("uniqueidentifier");
         builder.HasIndex("ShoppingListId");
     }
 }
