@@ -1,5 +1,6 @@
 using JasperFx;
 using JasperFx.CodeGeneration;
+using Microsoft.EntityFrameworkCore;
 
 using ShoppingList.Application.Commands;
 using ShoppingList.Application.Handlers;
@@ -9,7 +10,19 @@ using Wolverine;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddAzureNpgsqlDbContext<ApplicationContext>("database");
+string? connectionString = builder.Configuration.GetConnectionString("database");
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException("Connection string 'database' is required. Configure ConnectionStrings:database before startup.");
+}
+
+builder.Services.AddDbContext<ApplicationContext>(options =>
+{
+    options.UseSqlServer(connectionString, sqlOptions =>
+    {
+        sqlOptions.EnableRetryOnFailure();
+    });
+});
 builder.Services.AddShoppingListPersistence();
 
 builder.Host.UseWolverine(o =>
@@ -21,6 +34,13 @@ builder.Host.UseWolverine(o =>
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    using IServiceScope scope = app.Services.CreateScope();
+    ApplicationContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
+    await dbContext.Database.MigrateAsync();
+}
 
 app.MapOpenApi();
 

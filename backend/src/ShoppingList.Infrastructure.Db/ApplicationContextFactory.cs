@@ -9,9 +9,12 @@ public sealed class ApplicationContextFactory : IDesignTimeDbContextFactory<Appl
     {
         DbContextOptionsBuilder<ApplicationContext> optionsBuilder = new();
         string connectionString = Environment.GetEnvironmentVariable("SHOPPINGLIST_DB_CONNECTION_STRING")
-            ?? "Host=localhost;Port=5432;Database=shoppinglist;Username=postgres;Password=postgres";
+            ?? "Server=localhost,1433;Database=shoppinglist;User Id=sa;Password=Your_strong_password123!;TrustServerCertificate=True";
 
-        optionsBuilder.UseNpgsql(connectionString);
+        optionsBuilder.UseSqlServer(connectionString, sqlOptions =>
+        {
+            sqlOptions.EnableRetryOnFailure();
+        });
         return new ApplicationContext(optionsBuilder.Options);
     }
 }

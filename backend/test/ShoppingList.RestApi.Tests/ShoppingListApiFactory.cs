@@ -25,7 +25,7 @@ public sealed class ShoppingListApiFactory : WebApplicationFactory<Program>
     {
         builder.UseEnvironment("Testing");
         builder.UseSetting("ConnectionStrings:database",
-            "Host=localhost;Port=5432;Database=test;Username=test;Password=test");
+            "Server=localhost,1433;Database=test;User Id=sa;Password=Your_strong_password123!;TrustServerCertificate=True");
 
         builder.ConfigureServices(services =>
         {

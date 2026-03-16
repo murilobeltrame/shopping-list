@@ -1,15 +1,14 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
 using ShoppingList.Infrastructure.Db;
-using Testcontainers.PostgreSql;
+using Testcontainers.MsSql;
 
 namespace ShoppingList.Infrastructure.Db.Tests;
 
-public sealed class PostgreSqlFixture : IAsyncLifetime
+public sealed class SqlServerFixture : IAsyncLifetime
 {
-    private readonly PostgreSqlContainer _container = new PostgreSqlBuilder("postgres:16-alpine")
-        .WithDatabase("shoppinglist_tests")
-        .WithUsername("postgres")
-        .WithPassword("postgres")
+    private readonly MsSqlContainer _container = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-latest")
+        .WithPassword("Your_strong_password123!")
         .Build();
 
     public async Task InitializeAsync()
@@ -24,13 +23,32 @@ public sealed class PostgreSqlFixture : IAsyncLifetime
 
     public async Task<DbContextOptions<ApplicationContext>> CreateFreshOptionsAsync()
     {
+        return await CreateFreshOptionsAsync(ensureCreated: true);
+    }
+
+    public async Task<DbContextOptions<ApplicationContext>> CreateMigrationOptionsAsync()
+    {
+        return await CreateFreshOptionsAsync(ensureCreated: false);
+    }
+
+    private async Task<DbContextOptions<ApplicationContext>> CreateFreshOptionsAsync(bool ensureCreated)
+    {
+        SqlConnectionStringBuilder connectionStringBuilder = new(_container.GetConnectionString())
+        {
+            InitialCatalog = "shoppinglist_tests",
+            TrustServerCertificate = true
+        };
+
         DbContextOptions<ApplicationContext> options = new DbContextOptionsBuilder<ApplicationContext>()
-            .UseNpgsql(_container.GetConnectionString())
+            .UseSqlServer(connectionStringBuilder.ConnectionString)
             .Options;
 
         await using ApplicationContext context = new(options);
         await context.Database.EnsureDeletedAsync();
-        await context.Database.EnsureCreatedAsync();
+        if (ensureCreated)
+        {
+            await context.Database.EnsureCreatedAsync();
+        }
 
         return options;
     }
