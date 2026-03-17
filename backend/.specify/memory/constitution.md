@@ -1,32 +1,33 @@
 <!--
-Sync Impact Report - Version 3.2.0 (2026-03-14)
+Sync Impact Report - Version 3.3.0 (2026-03-16)
 ================================================================
-VERSION CHANGE: 3.1.0 → 3.2.0
-BUMP RATIONALE: MINOR - Principle III materially expanded with two new MUST rules:
-(1) ApplicationContext MUST NOT expose public DbSet<T> properties;
-(2) Infrastructure MUST use open-generic EfRepository<T> as the canonical
-implementation; entity-specific repository subclasses are prohibited for
-standard CRUD/query scenarios. Principle VII expanded with explicit rule
-banning private backing fields for constructor-injected parameters.
+VERSION CHANGE: 3.2.0 → 3.3.0
+BUMP RATIONALE: MINOR - Added Principle VIII. REST API Design Standards with
+comprehensive guidance on HTTP semantics, endpoint organization, request/response
+handling, filtering, pagination, and query parameter composition. Includes mandatory
+rule: Response DTOs MUST NEVER include navigation properties (only scalar properties
+and IDs). This principle integrates REST best practices with the existing clean
+architecture and CQRS model.
 
 MODIFIED PRINCIPLES:
-  - III. Specification-First Repository Pattern (expanded)
-  - VII. Modern C# Style Rules (expanded)
+  - VIII. REST API Design Standards (NEW)
 
 ADDED SECTIONS:
-  - None
+  - VIII. REST API Design Standards
 
 REMOVED SECTIONS:
   - None
 
 TEMPLATES REQUIRING UPDATES:
-  ✅ .specify/templates/plan-template.md (Constitution Check item III updated)
-  ✅ .specify/memory/constitution.md (quality gates aligned)
-  ⚠ pending: .specify/templates/commands/*.md (directory does not exist in repository)
+  ✅ .specify/templates/plan-template.md (to include REST API design review)
+  ⚠ pending: .specify/templates/spec-template.md (optionally include REST endpoint schema section)
+  ⚠ pending: Individual endpoint specs should document request/response shapes and HTTP semantics
 
 FOLLOW-UP TODOs:
-  - TODO(COMMAND_TEMPLATES): Add `.specify/templates/commands/` if command templates are introduced,
-    then align wording with Constitution v3.2.0.
+  - TODO(REST_SPEC_TEMPLATE): Consider adding optional REST design section to spec-template.md
+    for features involving new endpoints.
+  - TODO(ENDPOINT_EXAMPLES): Document example implementations in quickstart guides once
+    endpoints are developed.
 ================================================================
 -->
 
@@ -150,6 +151,96 @@ Clear, domain-enforced error messages provide sufficient boundary feedback.
 Eliminating redundant backing fields keeps dependencies visible at the constructor
 signature and avoids unnecessary boilerplate.
 
+### VIII. REST API Design Standards
+
+**All RestApi endpoints MUST follow REST best practices with explicit HTTP semantics.**
+
+**HTTP Semantics & Status Codes**:
+
+- GET requests MUST return 200 (OK) for successful retrieval, 404 (Not Found) when
+  resource does not exist.
+- POST requests MUST return 201 (Created) on successful creation, 400 (Bad Request)
+  for invalid input, 409 (Conflict) for business logic violations.
+- PUT/PATCH requests MUST return 200 (OK) or 204 (No Content) on success, 404 (Not Found)
+  if resource does not exist, 400 (Bad Request) for validation failures.
+- DELETE requests MUST return 204 (No Content) on successful deletion, 404 (Not Found)
+  if resource does not exist.
+- All error responses MUST return appropriate 4xx or 5xx status codes with meaningful
+  error detail in response body.
+
+**Endpoint Organization**:
+
+- RestApi endpoints MUST be organized by entity under `/<entity>Endpoints/` directories.
+- Each entity directory MUST include:
+  - `RouterExtensions.cs`: extension method that registers all entity endpoints.
+  - Subdirectories for each use case: `/<UseCase>Endpoint/`
+    - `Endpoint.cs`: minimal API endpoint handler
+    - `Requests/`: request DTOs (if needed beyond CQRS Command/Query)
+    - `Responses/`: response DTOs (if needed beyond Command/Query result)
+- Example structure:
+  ```
+  /ShoppingListEndpoints/
+    RouterExtensions.cs
+    /CreateShoppingListEndpoint/
+      Endpoint.cs
+      Requests/CreateRequest.cs
+      Responses/CreateResponse.cs
+    /GetShoppingListByIdEndpoint/
+      Endpoint.cs
+      Responses/ShoppingListResponse.cs
+    /FetchShoppingListsEndpoint/
+      Endpoint.cs
+      Requests/FetchRequest.cs (for query parameters)
+      Responses/ShoppingListResponse.cs
+  ```
+
+**Request & Response Design**:
+
+- Request objects MUST be defined ONLY if the CQRS Command or Query doesn't naturally
+  fit API design (e.g., mixed route + body parameters requiring a composite Request object).
+- Response objects MUST be defined ONLY if the expected API output doesn't align with
+  the default result of Ardalis.Specification operation or repository call.
+- Response objects MUST NEVER include navigation properties. Responses MUST only contain
+  scalar properties and explicit value objects; related entities MUST be referenced by ID
+  only. Navigation properties compromise API contract stability and increase payload size.
+- When API receives multiple query parameters, they MUST be contained in a single object
+  mapped with `[FromQuery]` attribute.
+- When API receives a request body, it MUST be defined as a single object.
+- When API receives mixed parameters (route + body), a Request object MUST be defined
+  and used with `[AsParameters]` attribute.
+
+**Required Endpoint Operations**:
+
+- Every entity MUST expose at least two endpoints:
+  - **Get by ID** endpoint: returns single entity or 404 if not found.
+  - **Fetch (List)** endpoint: returns paginated collection with optional filtering.
+
+**Filtering Rules**:
+
+- Fetch endpoints MUST support filtering on every column except Id.
+- Text fields MUST support LIKE filtering when value includes `*` (query MUST replace `*`
+  with SQL wildcard `%`).
+- Numeric and DateTime columns MUST support min/max range filtering (separate parameters
+  for lower and upper bounds).
+- All filters MUST be optional; absent filters MUST not restrict results.
+- Filters MUST be passed as query parameters within a single `[FromQuery]` object.
+
+**Pagination**:
+
+- Fetch endpoints MAY be paginated (pagination is optional per entity requirements).
+- When paginated:
+  - Page index parameter MUST default to 1 (1-based, not 0-based).
+  - Page length parameter MUST default to 10.
+  - Both parameters MUST be optional query parameters.
+  - Response MUST include pagination metadata (total count, current page, page length).
+
+**Rationale**: Explicit HTTP semantics ensure API consumers understand intent.
+Organized endpoint structure keeps code maintainable and discoverable. Request/response
+separation enforces clean boundaries. Query parameter composition reduces parameter
+explosion and improves readability. Pagination and filtering patterns are industry-standard
+and essential for working with large datasets. Mandatory entity-level Get and Fetch
+operations provide minimum CRUD coverage.
+
 ## Technology Stack & Dependencies
 
 **Framework & Runtime**:
@@ -191,6 +282,12 @@ signature and avoids unnecessary boilerplate.
   build-review violation.
 - Classes using primary constructors MUST NOT introduce private backing fields for
   constructor-injected parameters.
+- New RestApi endpoints MUST conform to Principle VIII (HTTP semantics, organization, pagination, filtering).
+- New entities MUST have corresponding Get-by-Id and Fetch (List) endpoints.
+- All filtering parameters MUST be composed into a single `[FromQuery]` object.
+- Endpoints MUST use correct HTTP status codes (201 for creation, 204 for delete, 404 for missing, 400 for validation).
+- Response DTOs MUST only be defined when API output structure differs from underlying query/command results.
+- Response DTOs MUST NEVER expose navigation properties; only scalar properties and IDs are permitted.
 
 ## Governance
 
@@ -216,4 +313,4 @@ signature and avoids unnecessary boilerplate.
 - PR review MUST verify all applicable MUST statements.
 - Any justified violation MUST be documented in `plan.md` Complexity Tracking.
 
-**Version**: 3.2.0 | **Ratified**: 2026-02-28 | **Last Amended**: 2026-03-14
+**Version**: 3.3.0 | **Ratified**: 2026-02-28 | **Last Amended**: 2026-03-16
