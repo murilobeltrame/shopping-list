@@ -10,19 +10,8 @@ using Wolverine;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-string? connectionString = builder.Configuration.GetConnectionString("database");
-if (string.IsNullOrWhiteSpace(connectionString))
-{
-    throw new InvalidOperationException("Connection string 'database' is required. Configure ConnectionStrings:database before startup.");
-}
+builder.AddSqlServerDbContext<ApplicationContext>("database");
 
-builder.Services.AddDbContext<ApplicationContext>(options =>
-{
-    options.UseSqlServer(connectionString, sqlOptions =>
-    {
-        sqlOptions.EnableRetryOnFailure();
-    });
-});
 builder.Services.AddShoppingListPersistence();
 
 builder.Host.UseWolverine(o =>

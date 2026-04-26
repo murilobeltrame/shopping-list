@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Ardalis.Specification" Version="9.3.1" />
-    <PackageReference Include="WolverineFx.FluentValidation" Version="5.17.0" />
+    <PackageReference Include="WolverineFx.FluentValidation" Version="5.32.1" />
   </ItemGroup>
 
   <PropertyGroup>
