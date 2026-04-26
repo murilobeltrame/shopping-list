@@ -17,3 +17,8 @@ This folder owns the native iOS client and its local Speckit assets.
 - Keep UI work accessible, responsive, and aligned with backend API contracts.
 - Treat offline behavior, loading states, and failure states as first-class requirements.
 - Do not reuse backend conventions unless they are explicitly relevant to iOS work.
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+<!-- SPECKIT END -->

@@ -11,31 +11,27 @@
 
 ## Technical Context
 
-**Language/Version**: .NET 10 (SDK 10.0.100), C# 13  
-**Primary Dependencies**: ASP.NET Core, Entity Framework Core, Ardalis.Specification, Ardalis.Specification.EntityFrameworkCore, WolverineFx, FluentValidation (when boundary validation is needed)  
-**Storage**: [Specify database: PostgreSQL, SQL Server, or NEEDS CLARIFICATION]  
-**Testing**: xUnit, Shouldly (assertions), AutoBogus (fake data), TestContainers (real DB tests)  
-**Target Platform**: ASP.NET Core REST API, .NET Aspire orchestration for local development  
-**Project Type**: Clean Architecture REST API with CQRS pattern  
-**Performance Goals**: [domain-specific, e.g., <200ms p95 latency, 1000 req/s or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., ACID transactions required, eventual consistency acceptable or NEEDS CLARIFICATION]  
-**Scale/Scope**: [domain-specific, e.g., 10k users, 100k entities, multi-tenant or NEEDS CLARIFICATION]
+<!--
+  ACTION REQUIRED: Replace the content in this section with the technical details
+  for the project. The structure here is presented in advisory capacity to guide
+  the iteration process.
+-->
+
+**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
+**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
+**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
+**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
+**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
+**Project Type**: [e.g., library/cli/web-service/mobile-app/compiler/desktop-app or NEEDS CLARIFICATION]  
+**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
+**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
+**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify compliance with ShoppingList Constitution (`.specify/memory/constitution.md`):
-
-- ✅ **I. Domain-Centric Clean Architecture**: Is business logic confined to Domain and dependency flow inward only?
-- ✅ **II. Test-First**: Are tests planned BEFORE implementation (Red-Green-Refactor)?
-- ✅ **III. Specification Pattern**: Does Application use Ardalis.Specification abstractions (`IRepositoryBase<T>` / `IReadRepositoryBase<T>`) while Infrastructure.Db provides EF concrete implementations via open-generic `EfRepository<T>`? Does `ApplicationContext` avoid exposing public `DbSet<T>` properties?
-- ✅ **IV. Real Database Testing**: Are TestContainers planned for DB integration tests?
-- ✅ **V. Domain Entity Integrity**: Do entities avoid public default constructors and enforce behavior via instance methods?
-- ✅ **VI. CQRS Messaging & Validation**: Are handlers dispatched with WolverineFx? Is boundary validation strategy explicit (FluentValidation when needed, otherwise clear domain enforcement)?
-- ✅ **VII. Modern C# Style Rules**: Are primary constructors/expression-bodied members preferred, `var` avoided, and constructor-injected parameters used directly (no private backing fields)?
-
-If any violations are needed, document justification in Complexity Tracking section below.
+[Gates determined based on constitution file]
 
 ## Project Structure
 
@@ -53,30 +49,50 @@ specs/[###-feature]/
 
 ### Source Code (repository root)
 <!--
-  ACTION REQUIRED: Verify the structure below matches your actual project layout.
-  For ShoppingList, this follows .NET Clean Architecture with Aspire orchestration.
+  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
+  for this feature. Delete unused options and expand the chosen structure with
+  real paths (e.g., apps/admin, packages/something). The delivered plan must
+  not include Option labels.
 -->
 
 ```text
+# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
 src/
-├── ShoppingList.Domain/          # Core entities, value objects, domain events (no dependencies)
-├── ShoppingList.Application/     # CQRS commands/queries, handlers (depends on Domain only)
-├── ShoppingList.Infrastructure.Db/  # EF Core, repositories, migrations (depends on Domain only)
-└── ShoppingList.RestApi/         # ASP.NET Core Minimal API (depends on Application + Infrastructure.Db)
+├── models/
+├── services/
+├── cli/
+└── lib/
 
-test/
-├── ShoppingList.Domain.Tests/           # Domain layer unit tests (Shouldly, AutoBogus)
-├── ShoppingList.Application.Tests/     # Application layer unit tests (Shouldly, AutoBogus)
-├── ShoppingList.Infrastructure.Db.Tests/  # Integration tests with TestContainers
-├── ShoppingList.RestApi.Tests/         # API endpoint tests
-└── ShoppingList.Architecture.Tests/    # Layer dependency enforcement tests
+tests/
+├── contract/
+├── integration/
+└── unit/
 
-env/
-├── ShoppingList.AppHost/         # .NET Aspire orchestration
-└── ShoppingList.ServiceDefaults/ # OpenTelemetry, health checks, resilience
+# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
+backend/
+├── src/
+│   ├── models/
+│   ├── services/
+│   └── api/
+└── tests/
+
+frontend/
+├── src/
+│   ├── components/
+│   ├── pages/
+│   └── services/
+└── tests/
+
+# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
+api/
+└── [same as backend above]
+
+ios/ or android/
+└── [platform-specific structure: feature modules, UI flows, platform tests]
 ```
 
-**Structure Decision**: Clean Architecture with strict inward dependency flow enforced by Architecture.Tests
+**Structure Decision**: [Document the selected structure and reference the real
+directories captured above]
 
 ## Complexity Tracking
 

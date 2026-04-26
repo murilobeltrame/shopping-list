@@ -68,3 +68,8 @@ Layer boundary correctness is enforced by **`test/ShoppingList.Architecture.Test
 - Test projects live under `test/`, one per source layer plus architecture tests
 - Aspire infrastructure lives under `env/`
 - Namespaces must match folder structure (`dotnet_style_namespace_match_folder`)
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+<!-- SPECKIT END -->
