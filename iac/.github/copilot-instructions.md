@@ -16,3 +16,8 @@ This folder owns infrastructure-as-code assets and their local Speckit assets.
 - Keep environments reproducible and explicitly parameterized.
 - Prefer reviewable plans and validation before any apply step.
 - Model security, least privilege, observability, and rollback paths as first-class requirements.
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+<!-- SPECKIT END -->
